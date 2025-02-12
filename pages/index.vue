@@ -1,11 +1,11 @@
 <template>
- <div class="  px-4 py-6 mt-1">
-  <HomeHeader/>
- </div>
- <div>
-  <ProjectAdd/>
- </div>
- <div>
-    <AppPinned/>
- </div>
+   <div class="  px-4 py-6 mt-1">
+      <HomeHeader />
+   </div>
+   <div>
+      <ProjectAdd />
+   </div>
+   <div>
+      <AppPinned />
+   </div>
 </template>
