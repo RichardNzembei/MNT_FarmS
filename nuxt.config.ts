@@ -2,11 +2,7 @@ import { defineNuxtConfig } from 'nuxt/config'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineNuxtConfig({
-  modules: [
-    '@nuxt/ui',
-    '@pinia/nuxt'
-  ],
-
+  modules: ['@nuxt/ui', '@pinia/nuxt'],
   vite: {
     plugins: [
       VitePWA({
@@ -21,6 +17,12 @@ export default defineNuxtConfig({
           theme_color: '#ffffff',
           icons: [
             {
+              src: '/favicon/144x144.webp',
+              sizes: '144x144',
+              type: 'image/png',
+              purpose: 'any'
+            },
+            {
               src: '/favicon/192x192.png',
               sizes: '192x192',
               type: 'image/png',
@@ -32,26 +34,22 @@ export default defineNuxtConfig({
               type: 'image/png',
               purpose: 'any maskable'
             }
-          ]
+          ],
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,png,svg,ico,json}'],
-          navigateFallback: '/',
-          navigateFallbackDenylist: [/^\/nuxt\//, /\/api\//],
+          navigateFallback: 'https://reubens-farm-s.vercel.app/',
+          navigateFallbackDenylist: [/^\/nuxt\//, /\/api\//]
         },
         includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png', 'mask-icon.svg'],
         srcDir: 'public'
       })
     ]
   },
-
   app: {
     head: {
-      link: [
-        { rel: 'manifest', href: '/manifest.json' }
-      ]
+      link: [{ rel: 'manifest', href: '/manifest.json' }]
     }
   },
-
   compatibilityDate: '2025-02-15'
 })
