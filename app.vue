@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { NuxtPage } from '#components';
-if ('serviceWorker' in navigator) {
+if (process.client && 'serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js')
     .then((registration) => {
       console.log('Service Worker registered with scope:', registration.scope);
@@ -9,6 +9,7 @@ if ('serviceWorker' in navigator) {
       console.error('Service Worker registration failed:', error);
     });
 }
+
 
 </script>
 
