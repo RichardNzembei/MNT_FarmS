@@ -17,7 +17,7 @@ export default defineNuxtConfig({
           theme_color: '#ffffff',
           icons: [
             {
-              src: '/favicon/144x144.webp',
+              src: '/favicon/144x144.png',
               sizes: '144x144',
               type: 'image/png',
               purpose: 'any'
@@ -35,6 +35,14 @@ export default defineNuxtConfig({
               purpose: 'any maskable'
             }
           ],
+          screenshots: [
+            {
+              src: '/screenshots/screenshot1.png',
+              sizes: '1080x1920',
+              type: 'image/png',
+              form_factor: 'wide'
+            }
+          ]
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,png,svg,ico,json}'],
