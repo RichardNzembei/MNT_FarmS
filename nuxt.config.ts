@@ -17,7 +17,7 @@ export default defineNuxtConfig({
           theme_color: '#ffffff',
           icons: [
             {
-              src: '/favicon/144x144.png',
+              src: '/iconified/144x144.png',
               sizes: '144x144',
               type: 'image/png',
               purpose: 'any'
