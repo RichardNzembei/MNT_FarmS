@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
           statusMessage: "Missing projectId",
         });
       }
-      if (!body.date || !body.type || !body.quantity) {
+      if (!body.date || !body.type || !body.stage || !body.name || !body.purpose) {
         throw createError({
           statusCode: 400,
           statusMessage: "Missing required fields for fertilizer record",
@@ -40,8 +40,9 @@ export default defineEventHandler(async (event) => {
         id: Date.now(),
         date: body.date,
         type: body.type,
-        quantity: body.quantity,
-        notes: body.notes || "",
+        name: body.name,
+        stage: body.stage,
+        purpose: body.purpose || "",
         createdAt: new Date(),
       };
 

@@ -1,18 +1,18 @@
 import { defineStore } from "pinia";
-
+const baseURL =
+process.env.NODE_ENV === "production"
+  ? "https://reubens-farm-s.vercel.app"
+  : typeof window !== "undefined" &&
+    window.location.hostname === "10.1.46.111"
+  ? "http://10.1.46.111:3000"
+  : "http://localhost:3000";
 export const useProjectStore = defineStore("projects", {
   state: () => ({
     projects: [],
   }),
   actions: {
     async fetchProjects() {
-      const baseURL =
-        process.env.NODE_ENV === "production"
-          ? "https://reubens-farm-s.vercel.app"
-          : typeof window !== "undefined" &&
-            window.location.hostname === "10.1.45.223"
-          ? "http://10.1.45.223:3000"
-          : "http://localhost:3000";
+     
 
       try {
         const response = await fetch(`${baseURL}/api/projects`);
@@ -34,13 +34,7 @@ export const useProjectStore = defineStore("projects", {
     },
 
     async addProject(project) {
-      const baseURL =
-        process.env.NODE_ENV === "production"
-          ? "https://reubens-farm-s.vercel.app"
-          : typeof window !== "undefined" &&
-            window.location.hostname === "10.1.45.223"
-          ? "http://10.1.45.223:3000"
-          : "http://localhost:3000";
+   
 
       try {
         const response = await fetch(`${baseURL}/api/projects`, {
@@ -73,13 +67,7 @@ export const useProjectStore = defineStore("projects", {
     },
 
     async addSprayingRecord(projectId, record) {
-      const baseURL =
-        process.env.NODE_ENV === "production"
-          ? "https://reubens-farm-s.vercel.app"
-          : typeof window !== "undefined" &&
-            window.location.hostname === "10.1.45.223"
-          ? "http://10.1.45.223:3000"
-          : "http://localhost:3000";
+   
 
       try {
         const response = await fetch(`${baseURL}/api/sprayingRecords`, {
@@ -109,13 +97,7 @@ export const useProjectStore = defineStore("projects", {
     },
 
     async addFertilizerRecord(projectId, record) {
-      const baseURL =
-        process.env.NODE_ENV === "production"
-          ? "https://reubens-farm-s.vercel.app"
-          : typeof window !== "undefined" &&
-            window.location.hostname === "10.1.45.223"
-          ? "http://10.1.45.223:3000"
-          : "http://localhost:3000";
+     
 
       try {
         const response = await fetch(`${baseURL}/api/fertilizerRecords`, {

@@ -1,7 +1,8 @@
 <template>
     <div class="bg-gray-100 min-h-screen p-6">
         <!-- Back Button -->
-        <NuxtLink to="/existingproject" class="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-all duration-300">
+        <NuxtLink to="/existingproject"
+            class="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-all duration-300">
             <UIcon name="i-heroicons-arrow-left" class="w-6 h-6 mr-2 hover:-translate-x-1 transition-transform" />
             <span class="text-sm font-medium">Back</span>
         </NuxtLink>
@@ -20,23 +21,38 @@
 
                 <!-- Spraying Records -->
                 <div class="mt-8">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Spraying Records</h3>
-                    <form @submit.prevent="saveSprayingRecord" class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold text-black mb-4">Spraying Records</h3>
+                    <button @click="toggleSprayingForm"
+                        class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-all mb-4">
+                        {{ showSprayingForm ? 'Hide Form' : 'Add Spraying Record' }}
+                    </button>
+                    <form v-if="showSprayingForm" @submit.prevent="saveSprayingRecord"
+                        class="bg-white p-4 rounded-lg shadow">
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            <input v-model="newSpraying.date" type="date" required class="border p-2 w-full" />
-                            <input v-model="newSpraying.serialNo" placeholder="Serial No" required class="border p-2 w-full" />
-                            <input v-model="newSpraying.tradeName" placeholder="Trade Name" required class="border p-2 w-full" />
-                            <input v-model="newSpraying.regNo" placeholder="Registration No" class="border p-2 w-full" />
-                            <input v-model="newSpraying.activeIngredients" placeholder="Active Ingredients" required class="border p-2 w-full" />
-                            <input v-model="newSpraying.manufacturer" placeholder="Manufacturer" required class="border p-2 w-full" />
-                            <input v-model="newSpraying.agent" placeholder="Agent" required class="border p-2 w-full" />
-                            <input v-model="newSpraying.uses" placeholder="Uses" required class="border p-2 w-full" />
+                            <label for="date" class="text-black">Date</label>
+                            <input v-model="newSpraying.date" type="date" required
+                                class="border p-2 w-full bg-white text-black" />
+                            <input v-model="newSpraying.serialNo" placeholder="Serial No" required
+                                class="border p-2 w-full bg-white text-black" />
+                            <input v-model="newSpraying.tradeName" placeholder="Trade Name" required
+                                class="border p-2 w-full bg-white text-black" />
+                            <input v-model="newSpraying.regNo" placeholder="Registration No"
+                                class="border p-2 w-full bg-white text-black" />
+                            <input v-model="newSpraying.activeIngredients" placeholder="Active Ingredients" required
+                                class="border p-2 w-full bg-white text-black" />
+                            <input v-model="newSpraying.manufacturer" placeholder="Manufacturer" required
+                                class="border p-2 w-full bg-white text-black" />
+                            <input v-model="newSpraying.agent" placeholder="Agent" required
+                                class="border p-2 w-full bg-white text-black" />
+                            <input v-model="newSpraying.uses" placeholder="Uses" required
+                                class="border p-2 w-full bg-white text-black" />
                         </div>
-                        <button type="submit" class="bg-green-500 text-white py-2 px-4 mt-4 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto">
+                        <button type="submit"
+                            class="bg-green-500 text-white py-2 px-4 mt-4 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto">
                             Save
                         </button>
                     </form>
-                    <div class="overflow-x-auto mt-4">
+                    <div class="overflow-x-auto mt-4 text-black">
                         <table class="min-w-full border border-gray-300">
                             <thead>
                                 <tr class="bg-gray-100 border border-gray-300">
@@ -51,7 +67,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="record in project.sprayingTable" :key="record.id" class="border border-gray-300 hover:bg-gray-50">
+                                <tr v-for="record in project.sprayingTable" :key="record.id"
+                                    class="border border-gray-300 hover:bg-gray-50">
                                     <td class="p-3 border">{{ record.serialNo }}</td>
                                     <td class="p-3 border">{{ record.tradeName }}</td>
                                     <td class="p-3 border">{{ record.regNo }}</td>
@@ -66,15 +83,67 @@
                     </div>
                 </div>
 
+                <!-- Fertilizer Records -->
+                <div class="mt-8">
+                    <h3 class="text-xl font-semibold text-black mb-4">Fertilizer Records</h3>
+                    <button @click="toggleFertilizerForm"
+                        class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-all mb-4">
+                        {{ showFertilizerForm ? 'Hide Form' : 'Add Fertilizer Record' }}
+                    </button>
+                    <form v-if="showFertilizerForm" @submit.prevent="saveFertilizerRecord"
+                        class="bg-white p-4 rounded-lg shadow">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            <label for="date" class="text-black">Date</label>
+                            <input v-model="newFertilizer.date" type="date" required
+                                class="border p-2 w-full bg-white text-black" />
+                            <input v-model="newFertilizer.stage" placeholder="Stage" required
+                                class="border p-2 w-full bg-white text-black" />
+                            <input v-model="newFertilizer.type" placeholder="Type" required
+                                class="border p-2 w-full bg-white text-black" />
+                            <input v-model="newFertilizer.name" placeholder="Name"
+                                class="border p-2 w-full bg-white text-black" />
+                            <input v-model="newFertilizer.purpose" placeholder="Purpose" required
+                                class="border p-2 w-full bg-white text-black" />
+                        </div>
+                        <button type="submit"
+                            class="bg-green-500 text-white py-2 px-4 mt-4 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto">
+                            Save
+                        </button>
+                    </form>
+                    <div class="overflow-x-auto mt-4 text-black">
+                        <table class="min-w-full border border-gray-300">
+                            <thead>
+                                <tr class="bg-gray-100 border border-gray-300">
+                                    <th class="p-3 text-left">Stages</th>
+                                    <th class="p-3 text-left">Type</th>
+                                    <th class="p-3 text-left">Name</th>
+                                    <th class="p-3 text-left">Purpose</th>
+                                    <th class="p-3 text-left">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="record in project.fertilizerTable" :key="record.id"
+                                    class="border border-gray-300 hover:bg-gray-50">
+                                    <td class="p-3 border">{{ record.stage }}</td>
+                                    <td class="p-3 border">{{ record.type }}</td>
+                                    <td class="p-3 border">{{ record.name }}</td>
+                                    <td class="p-3 border">{{ record.purpose }}</td>
+                                    <td class="p-3 border">{{ record.date }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Generate Report Button -->
-                <button @click="generateReport" class="mt-6 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-all w-full sm:w-auto">
+                <button @click="generateReport"
+                    class="mt-6 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-all w-full sm:w-auto">
                     Download Report
                 </button>
             </div>
         </div>
     </div>
 </template>
-
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
@@ -86,7 +155,16 @@ const projectStore = useProjectStore();
 const project = ref(null);
 const loading = ref(true);
 const newSpraying = ref({ serialNo: '', tradeName: '', regNo: '', activeIngredients: '', manufacturer: '', agent: '', uses: '', date: '' });
-const newFertilizer = ref({ date: '', type: '', quantity: '', notes: '' });
+const newFertilizer = ref({ date: '', type: '', stage: '', purpose: '', name: '' });
+const showSprayingForm = ref(false);
+const showFertilizerForm = ref(false);
+
+function toggleFertilizerForm() {
+    showFertilizerForm.value = !showFertilizerForm.value
+}
+function toggleSprayingForm() {
+    showSprayingForm.value = !showSprayingForm.value
+}
 
 onMounted(async () => {
     loading.value = true;
@@ -98,7 +176,8 @@ onMounted(async () => {
 const saveSprayingRecord = async () => {
     try {
         await projectStore.addSprayingRecord(project.value.id, newSpraying.value);
-        newSpraying.value = { serialNo: '', tradeName: '', regNo: '', activeIngredients: '', manufacturer: '', agent: '', uses: '', date: '' };
+        newSpraying.value = { serialNo: '', tradeName: '', regNo: '', activeIngredients: '', manufacturer: '', agent: '', uses: '', date: '' }; // Reset form
+        showSprayingForm.value = false; // Hide form after submission
     } catch (error) {
         console.error("Error saving spraying record:", error);
     }
@@ -107,50 +186,58 @@ const saveSprayingRecord = async () => {
 const saveFertilizerRecord = async () => {
     try {
         await projectStore.addFertilizerRecord(project.value.id, newFertilizer.value);
-        newFertilizer.value = { date: '', type: '', quantity: '', notes: '' };
+        newFertilizer.value = { date: '', type: '', stage: '', name: '', purpose: '' }; // Reset form
+        showFertilizerForm.value = false; // Hide form after submission
     } catch (error) {
         console.error("Error saving fertilizer record:", error);
     }
 };
 
 const generateReport = () => {
-    const sprayingSheetData = [
-        ["Date", "Chemical Used", "Quantity", "Notes"],
-        ...project.value.sprayingTable.map(record => [
-            record.serialNo,
-            record.tradeName,
-            record.regNo,
-            record.activeIngredients,
-            record.manufacturer,
-            record.agent,
-            record.uses,
-            record.date
+    try {
+        // Prepare spraying data
+        const sprayingSheetData = [
+            ["Serial No", "Trade Name", "Reg No", "Active Ingredients", "Manufacturer", "Agent", "Uses", "Date"],
+            ...project.value.sprayingTable.map(record => [
+                record.serialNo,
+                record.tradeName,
+                record.regNo,
+                record.activeIngredients,
+                record.manufacturer,
+                record.agent,
+                record.uses,
+                record.date
+            ])
+        ];
 
+        // Prepare fertilizer data
+        const fertilizerSheetData = [
+            ["Date", "Stage", "Type", "Name", "Purpose"],
+            ...project.value.fertilizerTable.map(record => [
+                record.date,
+                record.stage,
+                record.type,
+                record.name,
+                record.purpose
+            ])
+        ];
 
-        ])
-    ];
+        // Create workbook and sheets
+        const wb = XLSX.utils.book_new();
+        const sprayingSheet = XLSX.utils.aoa_to_sheet(sprayingSheetData);
+        const fertilizerSheet = XLSX.utils.aoa_to_sheet(fertilizerSheetData);
+        XLSX.utils.book_append_sheet(wb, sprayingSheet, "Spraying Records");
+        XLSX.utils.book_append_sheet(wb, fertilizerSheet, "Fertilizer Records");
 
-    const fertilizerSheetData = [
-        ["Serial No", "Trade Name", "Registration No", "Active Ingredients", "Manufacturer", "Agent", "Date"],
-        ...project.value.fertilizerTable.map(record => [
-            record.date,
-            record.chemical,
-            record.quantity,
-            record.notes
-
-        ])
-    ];
-    const wb = XLSX.utils.book_new();
-
-    const sprayingSheet = XLSX.utils.aoa_to_sheet(sprayingSheetData);
-    const fertilizerSheet = XLSX.utils.aoa_to_sheet(fertilizerSheetData);
-    XLSX.utils.book_append_sheet(wb, sprayingSheet, "Spraying Records");
-    XLSX.utils.book_append_sheet(wb, fertilizerSheet, "Fertilizer Records");
-    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([wbout], { type: 'application/octet-stream' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `${project.value.projectName}-report.xlsx`;
-    link.click();
+        // Generate and download the Excel file
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([wbout], { type: 'application/octet-stream' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${project.value.projectName}-report.xlsx`;
+        link.click();
+    } catch (error) {
+        console.error("Error generating report:", error);
+    }
 };
 </script>

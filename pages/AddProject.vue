@@ -13,43 +13,44 @@
                     <div class="mb-6">
                         <label class="block text-gray-700 font-semibold mb-2">Project Name</label>
                         <input v-model="project.projectName" type="text"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all bg-white text-black"
                             placeholder="Enter project name" required />
                     </div>
                     <div class="mb-6">
                         <label class="block text-gray-700 font-semibold mb-2">Description</label>
                         <textarea v-model="project.description"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all bg-white text-black"
                             rows="4" placeholder="Enter project description" required></textarea>
                     </div>
                     <div class="mb-6">
                         <label class="block text-gray-700 font-semibold mb-2">Estimated Duration (Months)</label>
                         <input v-model="project.duration" type="number"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all bg-white text-black"
                             placeholder="Enter duration" required />
                     </div>
                     <div class="mb-6">
                         <label class="block text-gray-700 font-semibold mb-2">Start Date</label>
                         <input v-model="project.startDate" type="date"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all bg-white text-black"
                             required />
                     </div>
                     <div class="mb-6">
                         <label class="block text-gray-700 font-semibold mb-2">Land Size (Acres)</label>
                         <input v-model="project.landSize" type="text"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all bg-white  text-black  "
                             placeholder="Enter land size" required />
                     </div>
                     <button type="submit" :disabled="loading"
                         class="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                         <span v-if="loading">Saving...</span>
                         <span v-else>Save Project</span>
-                    </button>
+                    </button>bg-white !bg-white text-black !text-black
                 </form>
             </div>
         </div>
     </div>
 </template>
+
 
 <script setup lang="ts">
 import { reactive, ref } from "vue";
