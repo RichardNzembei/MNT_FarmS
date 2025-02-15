@@ -1,5 +1,13 @@
 <script setup lang="ts">
 import { NuxtPage } from '#components';
+import { useHead } from 'nuxt/app';
+
+useHead({
+  link: [
+    { rel: 'manifest', href: '/manifest.json' }
+  ]
+});
+
 if (process.client && 'serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js')
     .then((registration) => {
@@ -9,13 +17,10 @@ if (process.client && 'serviceWorker' in navigator) {
       console.error('Service Worker registration failed:', error);
     });
 }
-
-
 </script>
 
 <template>
   <div class="bg-white dark:bg-white min-h-screen">
     <NuxtPage />
   </div>
-
 </template>

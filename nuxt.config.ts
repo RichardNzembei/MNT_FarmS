@@ -24,23 +24,33 @@ export default defineNuxtConfig({
               src: '/favicon/192x192.png',
               sizes: '192x192',
               type: 'image/png',
-              purpose: 'maskable'
+              purpose: 'any maskable'
             },
             {
               src: '/favicon/512x512.png',
               sizes: '512x512',
               type: 'image/png',
-              purpose: 'maskable'
+              purpose: 'any maskable'
             }
           ]
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,png,svg,ico,json}'],
-          navigateFallback: '/',  // Nuxt fallback
-          navigateFallbackDenylist: [/^\/_nuxt\//, /\/api\//], // Ignore internal Nuxt files and API calls
-        }
+          navigateFallback: '/',
+          navigateFallbackDenylist: [/^\/nuxt\//, /\/api\//],
+        },
+        includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png', 'mask-icon.svg'],
+        srcDir: 'public'
       })
     ]
+  },
+
+  app: {
+    head: {
+      link: [
+        { rel: 'manifest', href: '/manifest.json' }
+      ]
+    }
   },
 
   compatibilityDate: '2025-02-15'
