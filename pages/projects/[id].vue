@@ -17,8 +17,8 @@
                 class="w-full max-w-4xl bg-white p-4 sm:p-8 rounded-lg shadow-lg animate-fade-in transition-transform transform hover:scale-105">
                 <!-- Header -->
                 <div class="flex items-center mb-4 sm:mb-6 space-x-2 sm:space-x-4">
-                    <UIcon name="i-lucide-document" class="w-8 h-8 sm:w-10 sm:h-10 text-sky-500" />
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-wide">Project Details</h2>
+                    <UIcon name="i-lucide-file" class="w-6 h-6 sm:w-10 sm:h-10 text-sky-500" />
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-green-700 tracking-wide">Project Details</h2>
                 </div>
 
                 <!-- Project Info -->
@@ -49,7 +49,7 @@
 
                 <!-- Records Heading -->
                 <div class="text-center mb-3 sm:mb-4">
-                    <h1 class="text-sky-500 text-2xl sm:text-3xl font-semibold mb-1">Records</h1>
+                    <h1 class="text-green-500 text-2xl sm:text-3xl font-semibold mb-1">Records</h1>
                 </div>
 
                 <!-- Records Navigation -->

@@ -3,8 +3,8 @@ const baseURL =
 process.env.NODE_ENV === "production"
   ? "https://reubens-farm-s.vercel.app"
   : typeof window !== "undefined" &&
-    window.location.hostname === "10.1.46.111"
-  ? "http://10.1.46.111:3000"
+    window.location.hostname === "10.1.46.130"
+  ? "http://10.1.46.130:3000"
   : "http://localhost:3000";
 export const useProjectStore = defineStore("projects", {
   state: () => ({
@@ -151,6 +151,27 @@ async addLaborRecord(projectId, record) {
     console.error("Error adding labor record:", error);
     alert("Error adding labor record: " + error.message);
     throw error;
+  }
+},
+async updateProjectStatus(projectId, status) {
+  try {
+    const response = await fetch('/api/updateStatus', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ projectId, status }),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to update project status');
+    }
+    // Optionally, you can use the updated project data returned from the backend:
+    // const updatedProject = await response.json();
+    const index = this.projects.findIndex((p) => p.id === projectId);
+    if (index !== -1) {
+      // Update the project status locally.
+      this.projects[index].status = status;
+    }
+  } catch (error) {
+    console.error('Error updating project status:', error);
   }
 },
 
