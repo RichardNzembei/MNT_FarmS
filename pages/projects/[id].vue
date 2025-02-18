@@ -18,7 +18,9 @@
                 <!-- Header -->
                 <div class="flex items-center mb-4 sm:mb-6 space-x-2 sm:space-x-4">
                     <UIcon name="i-lucide-file" class="w-6 h-6 sm:w-10 sm:h-10 text-sky-500" />
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-green-700 tracking-wide">Project Details</h2>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-green-700 tracking-wide">
+                        Project Details
+                    </h2>
                 </div>
 
                 <!-- Project Info -->
@@ -53,24 +55,30 @@
                 </div>
 
                 <!-- Records Navigation -->
-                <div class="flex flex-wrap justify-center mb-4 sm:mb-6 gap-2 sm:gap-4">
+                <div class="flex flex-wrap sm:justify-center mb-4 sm:mb-6 gap-2 sm:gap-4">
                     <button
-                        class="flex items-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
+                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
                         @click="setView('labour')" :class="{ 'bg-blue-500 text-white': currentView === 'labour' }">
                         <UIcon name="i-lucide-users" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
                         Labour
                     </button>
                     <button
-                        class="flex items-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
+                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
+                        @click="setView('harvest')" :class="{ 'bg-blue-500 text-white': currentView === 'harvest' }">
+                        <UIcon name="i-lucide-leaf" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
+                        Harvest
+                    </button>
+                    <button
+                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
                         @click="setView('spray')" :class="{ 'bg-blue-500 text-white': currentView === 'spray' }">
                         <UIcon name="i-lucide-droplet" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
                         Spray
                     </button>
                     <button
-                        class="flex items-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
+                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
                         @click="setView('fertilizer')"
                         :class="{ 'bg-blue-500 text-white': currentView === 'fertilizer' }">
-                        <UIcon name="i-lucide-leaf" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
+                        <UIcon name="i-lucide-package" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
                         Fertilizer
                     </button>
                 </div>
@@ -104,8 +112,9 @@
                                 class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
                         </div>
                         <button type="submit"
-                            class="bg-green-500 text-white py-1 px-3 sm:py-2 sm:px-4 mt-3 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto text-xs sm:text-sm">
-                            Save
+                            class="bg-green-500 text-white py-1 px-3 sm:py-2 sm:px-4 mt-3 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto text-xs sm:text-sm"
+                            :disabled="savingLabor">
+                            {{ savingLabor ? 'Saving...' : 'Save' }}
                         </button>
                     </form>
                     <div class="overflow-x-auto mt-2 sm:mt-4 text-black">
@@ -170,8 +179,9 @@
                                 class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
                         </div>
                         <button type="submit"
-                            class="bg-green-500 text-white py-1 px-3 sm:py-2 sm:px-4 mt-3 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto text-xs sm:text-sm">
-                            Save
+                            class="bg-green-500 text-white py-1 px-3 sm:py-2 sm:px-4 mt-3 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto text-xs sm:text-sm"
+                            :disabled="savingSpraying">
+                            {{ savingSpraying ? 'Saving...' : 'Save' }}
                         </button>
                     </form>
                     <div class="overflow-x-auto mt-2 sm:mt-4 text-black">
@@ -232,8 +242,9 @@
                                 class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
                         </div>
                         <button type="submit"
-                            class="bg-green-500 text-white py-1 px-3 sm:py-2 sm:px-4 mt-3 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto text-xs sm:text-sm">
-                            Save
+                            class="bg-green-500 text-white py-1 px-3 sm:py-2 sm:px-4 mt-3 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto text-xs sm:text-sm"
+                            :disabled="savingFertilizer">
+                            {{ savingFertilizer ? 'Saving...' : 'Save' }}
                         </button>
                     </form>
                     <div class="overflow-x-auto mt-2 sm:mt-4 text-black">
@@ -274,36 +285,45 @@
     </div>
 </template>
 
-
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useProjectStore } from '~/stores/project';
 import * as XLSX from 'xlsx';
 
-const currentView = ref('labour')
+const currentView = ref('labour');
 const setView = (view) => {
-    currentView.value = view
-}
+    currentView.value = view;
+};
+
 const route = useRoute();
 const projectStore = useProjectStore();
 const project = ref(null);
 const loading = ref(true);
+
+// Form data
 const newSpraying = ref({ serialNo: '', tradeName: '', regNo: '', activeIngredients: '', manufacturer: '', agent: '', uses: '', date: '' });
 const newFertilizer = ref({ date: '', type: '', stage: '', purpose: '', name: '' });
 const newLabor = ref({ date: '', numberOfWorkers: '', taskPerformed: '', hoursWorked: '', wageRate: '', cropArea: '' });
+
+// Form visibility
 const showSprayingForm = ref(false);
 const showFertilizerForm = ref(false);
 const showLaborForm = ref(false);
 
+// Saving state flags
+const savingLabor = ref(false);
+const savingSpraying = ref(false);
+const savingFertilizer = ref(false);
+
 function toggleFertilizerForm() {
-    showFertilizerForm.value = !showFertilizerForm.value
+    showFertilizerForm.value = !showFertilizerForm.value;
 }
 function toggleSprayingForm() {
-    showSprayingForm.value = !showSprayingForm.value
+    showSprayingForm.value = !showSprayingForm.value;
 }
 function toggleLaborForm() {
-    showLaborForm.value = !showLaborForm.value
+    showLaborForm.value = !showLaborForm.value;
 }
 
 onMounted(async () => {
@@ -315,29 +335,34 @@ onMounted(async () => {
 
 const saveSprayingRecord = async () => {
     try {
+        savingSpraying.value = true;
         await projectStore.addSprayingRecord(project.value.id, newSpraying.value);
-        newSpraying.value = { serialNo: '', tradeName: '', regNo: '', activeIngredients: '', manufacturer: '', agent: '', uses: '', date: '' }; // Reset form
-        showSprayingForm.value = false; // Hide form after submission
+        newSpraying.value = { serialNo: '', tradeName: '', regNo: '', activeIngredients: '', manufacturer: '', agent: '', uses: '', date: '' };
+        showSprayingForm.value = false;
     } catch (error) {
         console.error("Error saving spraying record:", error);
+    } finally {
+        savingSpraying.value = false;
     }
 };
 
 const saveFertilizerRecord = async () => {
     try {
+        savingFertilizer.value = true;
         await projectStore.addFertilizerRecord(project.value.id, newFertilizer.value);
-        newFertilizer.value = { date: '', type: '', stage: '', name: '', purpose: '' }; // Reset form
-        showFertilizerForm.value = false; // Hide form after submission
+        newFertilizer.value = { date: '', type: '', stage: '', name: '', purpose: '' };
+        showFertilizerForm.value = false;
     } catch (error) {
         console.error("Error saving fertilizer record:", error);
+    } finally {
+        savingFertilizer.value = false;
     }
 };
 
 const saveLaborRecord = async () => {
     try {
-        // Call the store method to add a labor record
+        savingLabor.value = true;
         await projectStore.addLaborRecord(project.value.id, newLabor.value);
-        // Reset the form values
         newLabor.value = {
             date: "",
             numberOfWorkers: "",
@@ -346,12 +371,13 @@ const saveLaborRecord = async () => {
             wageRate: "",
             cropArea: "",
         };
-        showLaborForm.value = false; // Hide the form after submission
+        showLaborForm.value = false;
     } catch (error) {
         console.error("Error saving labor record:", error);
+    } finally {
+        savingLabor.value = false;
     }
 };
-
 
 const generateReport = () => {
     try {
@@ -384,18 +410,17 @@ const generateReport = () => {
 
         // Prepare labor data
         const laborSheetData = [
-            ["Date", "Number of Workers", "Task Performed", "Hours Worked", "Wage Rate", "Total Wages Earned", "Crop/Animal Area", "Weather Conditions", "Overtime Hours"],
+            ["Date", "Number of Workers", "Task Performed", "Hours Worked", "Wage Rate", "Total Wages Earned", "Crop/Animal Area"],
             ...project.value.laborTable.map(record => [
                 record.date,
                 record.numberOfWorkers,
                 record.taskPerformed,
                 record.hoursWorked,
                 record.wageRate,
+                record.numberOfWorkers * record.wageRate,
                 record.cropArea,
-
             ])
         ];
-
 
         // Create workbook and sheets
         const wb = XLSX.utils.book_new();

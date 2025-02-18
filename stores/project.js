@@ -3,8 +3,8 @@ const baseURL =
 process.env.NODE_ENV === "production"
   ? "https://reubens-farm-s.vercel.app"
   : typeof window !== "undefined" &&
-    window.location.hostname === "10.1.46.130"
-  ? "http://10.1.46.130:3000"
+    window.location.hostname === "10.1.45.234"
+  ? "http://10.1.45.234:3000"
   : "http://localhost:3000";
 export const useProjectStore = defineStore("projects", {
   state: () => ({
