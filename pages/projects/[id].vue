@@ -1,51 +1,98 @@
 <template>
-    <div class="bg-gray-100 min-h-screen p-6">
+    <div class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen p-8">
         <!-- Back Button -->
         <NuxtLink to="/existingproject"
             class="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-all duration-300">
-            <UIcon name="i-heroicons-arrow-left" class="w-6 h-6 mr-2 hover:-translate-x-1 transition-transform" />
+            <UIcon name="i-lucide-arrow-left" class="w-6 h-6 mr-2 transition-transform hover:-translate-x-2" />
             <span class="text-sm font-medium">Back</span>
         </NuxtLink>
 
         <div class="flex items-center justify-center">
-            <div v-if="loading" class="text-gray-500 text-xl font-semibold">Loading project...</div>
+            <div v-if="loading" class="text-gray-500 text-xl font-semibold animate-pulse">
+                Loading project...
+            </div>
 
-            <div v-else-if="project" class="w-full max-w-4xl bg-white p-6 sm:p-8 animate-fade-in">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Project Details</h2>
+            <div v-else-if="project"
+                class="w-full max-w-4xl bg-white p-8 rounded-lg shadow-lg animate-fade-in transition-transform transform hover:scale-105">
+                <div class="flex items-center mb-6 space-x-4">
+                    <UIcon name="i-lucide-document" class="w-10 h-10 text-sky-500" />
+                    <h2 class="text-3xl font-extrabold text-gray-900 tracking-wide">Project Details</h2>
+                </div>
 
-                <h3 class="text-xl font-semibold text-gray-700 mb-4">{{ project.projectName }}</h3>
-                <p class="text-gray-600">{{ project.description }}</p>
-                <p class="text-gray-600"><strong>Duration:</strong> {{ project.duration }} months</p>
-                <p class="text-gray-600"><strong>Start Date:</strong> {{ project.startDate }}</p>
-                <p class="text-gray-600"><strong>Land Size:</strong> {{ project.landSize }} Acres</p>
+                <div class="mb-6">
+                    <h3 class="flex items-center text-2xl font-semibold text-gray-800 space-x-3">
+                        <UIcon name="i-lucide-briefcase" class="w-7 h-7 text-green-500 animate-bounce" />
+                        <span>{{ project.projectName }}</span>
+                    </h3>
+                    <p class="mt-4 text-lg text-gray-700 leading-relaxed">{{ project.description }}</p>
+                    <div class="mt-4 space-y-1 text-base text-gray-700">
+                        <p>
+                            <span class="font-medium text-gray-800">Duration:</span>
+                            {{ project.duration }} months
+                        </p>
+                        <p>
+                            <span class="font-medium text-gray-800">Start Date:</span>
+                            {{ project.startDate }}
+                        </p>
+                        <p>
+                            <span class="font-medium text-gray-800">Land Size:</span>
+                            {{ project.landSize }} Acres
+                        </p>
+                    </div>
+                </div>
+                <div class="text-center mb-4">
+                    <h1 class="text-sky-500 text-3xl font-semibold mb-2">Records</h1>
+                </div>
 
-                <!-- Spraying Records -->
-                <div class="mt-8">
-                    <h3 class="text-xl font-semibold text-black mb-4">Spraying Records</h3>
-                    <button @click="toggleSprayingForm"
-                        class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-all mb-4">
-                        {{ showSprayingForm ? 'Hide Form' : 'Add Spraying Record' }}
+                <div class="flex justify-center mb-6 space-x-4">
+                    <button
+                        class="flex items-center border border-blue-500 text-blue-500 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
+                        @click="setView('labour')" :class="{ 'bg-blue-500 text-white': currentView === 'labour' }">
+                        <UIcon name="i-lucide-users" class="w-5 h-5 mr-1" />
+                        Labour
                     </button>
-                    <form v-if="showSprayingForm" @submit.prevent="saveSprayingRecord"
-                        class="bg-white p-4 rounded-lg shadow">
+                    <button
+                        class="flex items-center border border-blue-500 text-blue-500 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
+                        @click="setView('spray')" :class="{ 'bg-blue-500 text-white': currentView === 'spray' }">
+                        <UIcon name="i-lucide-droplet" class="w-5 h-5 mr-1" />
+                        Spray
+                    </button>
+                    <button
+                        class="flex items-center border border-blue-500 text-blue-500 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
+                        @click="setView('fertilizer')"
+                        :class="{ 'bg-blue-500 text-white': currentView === 'fertilizer' }">
+                        <UIcon name="i-lucide-leaf" class="w-5 h-5 mr-1" />
+                        Fertilizer
+                    </button>
+                </div>
+
+                <!-- Labor Records -->
+                <div v-if="currentView === 'labour'" class="mt-8">
+                    <div class="flex items-center mb-4">
+                        <UIcon name="i-lucide-clipboard" class="w-6 h-6 text-black mr-2" />
+                        <h3 class="text-xl font-semibold text-black">Labor Records</h3>
+                    </div>
+                    <button @click="toggleLaborForm"
+                        class="flex items-center bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-all mb-4">
+                        <UIcon name="i-lucide-plus" class="w-5 h-5 mr-2" />
+                        {{ showLaborForm ? 'Hide Form' : 'Add Labor Record' }}
+                    </button>
+                    <form v-if="showLaborForm" @submit.prevent="saveLaborRecord"
+                        class="bg-gray-50 p-4 rounded-lg shadow mb-4 animate-slide-down">
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             <label for="date" class="text-black">Date</label>
-                            <input v-model="newSpraying.date" type="date" required
-                                class="border p-2 w-full bg-white text-black" />
-                            <input v-model="newSpraying.serialNo" placeholder="Serial No" required
-                                class="border p-2 w-full bg-white text-black" />
-                            <input v-model="newSpraying.tradeName" placeholder="Trade Name" required
-                                class="border p-2 w-full bg-white text-black" />
-                            <input v-model="newSpraying.regNo" placeholder="Registration No"
-                                class="border p-2 w-full bg-white text-black" />
-                            <input v-model="newSpraying.activeIngredients" placeholder="Active Ingredients" required
-                                class="border p-2 w-full bg-white text-black" />
-                            <input v-model="newSpraying.manufacturer" placeholder="Manufacturer" required
-                                class="border p-2 w-full bg-white text-black" />
-                            <input v-model="newSpraying.agent" placeholder="Agent" required
-                                class="border p-2 w-full bg-white text-black" />
-                            <input v-model="newSpraying.uses" placeholder="Uses" required
-                                class="border p-2 w-full bg-white text-black" />
+                            <input v-model="newLabor.date" type="date" required
+                                class="border p-2 w-full bg-white text-black rounded" />
+                            <input v-model="newLabor.numberOfWorkers" placeholder="Number of Workers" required
+                                class="border p-2 w-full bg-white text-black rounded" />
+                            <input v-model="newLabor.taskPerformed" placeholder="Task Performed" required
+                                class="border p-2 w-full bg-white text-black rounded" />
+                            <input v-model="newLabor.hoursWorked" placeholder="Hours Worked" required
+                                class="border p-2 w-full bg-white text-black rounded" />
+                            <input v-model="newLabor.wageRate" placeholder="Wage Rate" required
+                                class="border p-2 w-full bg-white text-black rounded" />
+                            <input v-model="newLabor.cropArea" placeholder="Crop Area" required
+                                class="border p-2 w-full bg-white text-black rounded" />
                         </div>
                         <button type="submit"
                             class="bg-green-500 text-white py-2 px-4 mt-4 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto">
@@ -53,9 +100,76 @@
                         </button>
                     </form>
                     <div class="overflow-x-auto mt-4 text-black">
-                        <table class="min-w-full border border-gray-300">
+                        <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden">
                             <thead>
-                                <tr class="bg-gray-100 border border-gray-300">
+                                <tr class="bg-gray-100 border-b border-gray-300">
+                                    <th class="p-3 text-left">Date</th>
+                                    <th class="p-3 text-left">Workers</th>
+                                    <th class="p-3 text-left">Task</th>
+                                    <th class="p-3 text-left">Hours</th>
+                                    <th class="p-3 text-left">Wage(Per/W)</th>
+                                    <th class="p-3 text-left">Area(Acres)</th>
+                                    <th class="p-3 text-left">Total(KSH)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="record in project.laborTable" :key="record.id"
+                                    class="border-t hover:bg-gray-50 transition-colors duration-200">
+                                    <td class="p-3">{{ record.date }}</td>
+                                    <td class="p-3">{{ record.numberOfWorkers }}</td>
+                                    <td class="p-3">{{ record.taskPerformed }}</td>
+                                    <td class="p-3">{{ record.hoursWorked }}</td>
+                                    <td class="p-3">{{ record.wageRate }}</td>
+                                    <td class="p-3">{{ record.cropArea }}</td>
+                                    <td>{{ record.numberOfWorkers*record.wageRate }}</td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Spraying Records -->
+                <div v-if="currentView === 'spray'" class="mt-8">
+                    <div class="flex items-center mb-4">
+                        <UIcon name="i-lucide-search" class="w-6 h-6 text-black mr-2" />
+                        <h3 class="text-xl font-semibold text-black">Spraying Records</h3>
+                    </div>
+                    <button @click="toggleSprayingForm"
+                        class="flex items-center bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-all mb-4">
+                        <UIcon name="i-lucide-plus" class="w-5 h-5 mr-2" />
+                        {{ showSprayingForm ? 'Hide Form' : 'Add Spraying Record' }}
+                    </button>
+                    <form v-if="showSprayingForm" @submit.prevent="saveSprayingRecord"
+                        class="bg-gray-50 p-4 rounded-lg shadow mb-4 animate-slide-down">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            <label for="date" class="text-black">Date</label>
+                            <input v-model="newSpraying.date" type="date" required
+                                class="border p-2 w-full bg-white text-black rounded" />
+                            <input v-model="newSpraying.serialNo" placeholder="Serial No" required
+                                class="border p-2 w-full bg-white text-black rounded" />
+                            <input v-model="newSpraying.tradeName" placeholder="Trade Name" required
+                                class="border p-2 w-full bg-white text-black rounded" />
+                            <input v-model="newSpraying.regNo" placeholder="Registration No"
+                                class="border p-2 w-full bg-white text-black rounded" />
+                            <input v-model="newSpraying.activeIngredients" placeholder="Active Ingredients" required
+                                class="border p-2 w-full bg-white text-black rounded" />
+                            <input v-model="newSpraying.manufacturer" placeholder="Manufacturer" required
+                                class="border p-2 w-full bg-white text-black rounded" />
+                            <input v-model="newSpraying.agent" placeholder="Agent" required
+                                class="border p-2 w-full bg-white text-black rounded" />
+                            <input v-model="newSpraying.uses" placeholder="Uses" required
+                                class="border p-2 w-full bg-white text-black rounded" />
+                        </div>
+                        <button type="submit"
+                            class="bg-green-500 text-white py-2 px-4 mt-4 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto">
+                            Save
+                        </button>
+                    </form>
+                    <div class="overflow-x-auto mt-4 text-black">
+                        <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden">
+                            <thead>
+                                <tr class="bg-gray-100 border-b border-gray-300">
                                     <th class="p-3 text-left">Serial No</th>
                                     <th class="p-3 text-left">Trade Name</th>
                                     <th class="p-3 text-left">Reg No</th>
@@ -68,15 +182,15 @@
                             </thead>
                             <tbody>
                                 <tr v-for="record in project.sprayingTable" :key="record.id"
-                                    class="border border-gray-300 hover:bg-gray-50">
-                                    <td class="p-3 border">{{ record.serialNo }}</td>
-                                    <td class="p-3 border">{{ record.tradeName }}</td>
-                                    <td class="p-3 border">{{ record.regNo }}</td>
-                                    <td class="p-3 border">{{ record.activeIngredients }}</td>
-                                    <td class="p-3 border">{{ record.manufacturer }}</td>
-                                    <td class="p-3 border">{{ record.agent }}</td>
-                                    <td class="p-3 border">{{ record.uses }}</td>
-                                    <td class="p-3 border">{{ record.date }}</td>
+                                    class="border-t hover:bg-gray-50 transition-colors duration-200">
+                                    <td class="p-3">{{ record.serialNo }}</td>
+                                    <td class="p-3">{{ record.tradeName }}</td>
+                                    <td class="p-3">{{ record.regNo }}</td>
+                                    <td class="p-3">{{ record.activeIngredients }}</td>
+                                    <td class="p-3">{{ record.manufacturer }}</td>
+                                    <td class="p-3">{{ record.agent }}</td>
+                                    <td class="p-3">{{ record.uses }}</td>
+                                    <td class="p-3">{{ record.date }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -84,26 +198,30 @@
                 </div>
 
                 <!-- Fertilizer Records -->
-                <div class="mt-8">
-                    <h3 class="text-xl font-semibold text-black mb-4">Fertilizer Records</h3>
+                <div v-if="currentView === 'fertilizer'" class="mt-8">
+                    <div class="flex items-center mb-4">
+                        <UIcon name="i-lucide-box" class="w-6 h-6 text-black mr-2" />
+                        <h3 class="text-xl font-semibold text-black">Fertilizer Records</h3>
+                    </div>
                     <button @click="toggleFertilizerForm"
-                        class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-all mb-4">
+                        class="flex items-center bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-all mb-4">
+                        <UIcon name="i-lucide-plus" class="w-5 h-5 mr-2" />
                         {{ showFertilizerForm ? 'Hide Form' : 'Add Fertilizer Record' }}
                     </button>
                     <form v-if="showFertilizerForm" @submit.prevent="saveFertilizerRecord"
-                        class="bg-white p-4 rounded-lg shadow">
+                        class="bg-gray-50 p-4 rounded-lg shadow mb-4 animate-slide-down">
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             <label for="date" class="text-black">Date</label>
                             <input v-model="newFertilizer.date" type="date" required
-                                class="border p-2 w-full bg-white text-black" />
+                                class="border p-2 w-full bg-white text-black rounded" />
                             <input v-model="newFertilizer.stage" placeholder="Stage" required
-                                class="border p-2 w-full bg-white text-black" />
+                                class="border p-2 w-full bg-white text-black rounded" />
                             <input v-model="newFertilizer.type" placeholder="Type" required
-                                class="border p-2 w-full bg-white text-black" />
+                                class="border p-2 w-full bg-white text-black rounded" />
                             <input v-model="newFertilizer.name" placeholder="Name"
-                                class="border p-2 w-full bg-white text-black" />
+                                class="border p-2 w-full bg-white text-black rounded" />
                             <input v-model="newFertilizer.purpose" placeholder="Purpose" required
-                                class="border p-2 w-full bg-white text-black" />
+                                class="border p-2 w-full bg-white text-black rounded" />
                         </div>
                         <button type="submit"
                             class="bg-green-500 text-white py-2 px-4 mt-4 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto">
@@ -111,10 +229,10 @@
                         </button>
                     </form>
                     <div class="overflow-x-auto mt-4 text-black">
-                        <table class="min-w-full border border-gray-300">
+                        <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden">
                             <thead>
-                                <tr class="bg-gray-100 border border-gray-300">
-                                    <th class="p-3 text-left">Stages</th>
+                                <tr class="bg-gray-100 border-b border-gray-300">
+                                    <th class="p-3 text-left">Stage</th>
                                     <th class="p-3 text-left">Type</th>
                                     <th class="p-3 text-left">Name</th>
                                     <th class="p-3 text-left">Purpose</th>
@@ -123,12 +241,12 @@
                             </thead>
                             <tbody>
                                 <tr v-for="record in project.fertilizerTable" :key="record.id"
-                                    class="border border-gray-300 hover:bg-gray-50">
-                                    <td class="p-3 border">{{ record.stage }}</td>
-                                    <td class="p-3 border">{{ record.type }}</td>
-                                    <td class="p-3 border">{{ record.name }}</td>
-                                    <td class="p-3 border">{{ record.purpose }}</td>
-                                    <td class="p-3 border">{{ record.date }}</td>
+                                    class="border-t hover:bg-gray-50 transition-colors duration-200">
+                                    <td class="p-3">{{ record.stage }}</td>
+                                    <td class="p-3">{{ record.type }}</td>
+                                    <td class="p-3">{{ record.name }}</td>
+                                    <td class="p-3">{{ record.purpose }}</td>
+                                    <td class="p-3">{{ record.date }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -136,34 +254,48 @@
                 </div>
 
                 <!-- Generate Report Button -->
-                <button @click="generateReport"
-                    class="mt-6 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-all w-full sm:w-auto">
-                    Download Report
-                </button>
+                <div class="text-center mt-6">
+                    <button @click="generateReport"
+                        class="flex items-center justify-center bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-all w-full sm:w-auto">
+                        <UIcon name="i-lucide-download" class="w-5 h-5 mr-2" />
+                        Download Report
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </template>
+
+
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useProjectStore } from '~/stores/project';
 import * as XLSX from 'xlsx';
 
+const currentView = ref('labour')
+const setView = (view) => {
+    currentView.value = view
+}
 const route = useRoute();
 const projectStore = useProjectStore();
 const project = ref(null);
 const loading = ref(true);
 const newSpraying = ref({ serialNo: '', tradeName: '', regNo: '', activeIngredients: '', manufacturer: '', agent: '', uses: '', date: '' });
 const newFertilizer = ref({ date: '', type: '', stage: '', purpose: '', name: '' });
+const newLabor = ref({ date: '', numberOfWorkers: '', taskPerformed: '', hoursWorked: '', wageRate: '', cropArea: '' });
 const showSprayingForm = ref(false);
 const showFertilizerForm = ref(false);
+const showLaborForm = ref(false);
 
 function toggleFertilizerForm() {
     showFertilizerForm.value = !showFertilizerForm.value
 }
 function toggleSprayingForm() {
     showSprayingForm.value = !showSprayingForm.value
+}
+function toggleLaborForm() {
+    showLaborForm.value = !showLaborForm.value
 }
 
 onMounted(async () => {
@@ -193,6 +325,26 @@ const saveFertilizerRecord = async () => {
     }
 };
 
+const saveLaborRecord = async () => {
+  try {
+    // Call the store method to add a labor record
+    await projectStore.addLaborRecord(project.value.id, newLabor.value);
+    // Reset the form values
+    newLabor.value = {
+      date: "",
+      numberOfWorkers: "",
+      taskPerformed: "",
+      hoursWorked: "",
+      wageRate: "",
+      cropArea: "",
+    };
+    showLaborForm.value = false; // Hide the form after submission
+  } catch (error) {
+    console.error("Error saving labor record:", error);
+  }
+};
+
+
 const generateReport = () => {
     try {
         // Prepare spraying data
@@ -221,6 +373,21 @@ const generateReport = () => {
                 record.purpose
             ])
         ];
+
+        // Prepare labor data
+        const laborSheetData = [
+            ["Date", "Number of Workers", "Task Performed", "Hours Worked", "Wage Rate", "Total Wages Earned", "Crop/Animal Area", "Weather Conditions", "Overtime Hours"],
+            ...project.value.laborTable.map(record => [
+                record.date,
+                record.numberOfWorkers,
+                record.taskPerformed,
+                record.hoursWorked,
+                record.wageRate,
+                record.cropArea,
+
+            ])
+        ];
+
 
         // Create workbook and sheets
         const wb = XLSX.utils.book_new();

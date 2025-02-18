@@ -56,6 +56,7 @@ export default defineEventHandler(async (event) => {
         landSize: body.landSize,
         sprayingTable: [],
         fertilizerTable: [],
+        laborTable:[],
         createdAt: new Date(),
       });
 

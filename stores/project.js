@@ -125,5 +125,34 @@ export const useProjectStore = defineStore("projects", {
         throw error;
       }
     },
+    // Client method to add a labor record for a project
+async addLaborRecord(projectId, record) {
+  try {
+    // Post the new record to the API
+    const response = await fetch(`${baseURL}/api/laborRecord`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ projectId, ...record }),
+    });
+    const data = await response.json();
+
+    if (response.ok) {
+      // Update the local project labor table
+      const project = this.projects.find((p) => p.id === projectId);
+      if (project) {
+        project.laborTable = project.laborTable || [];
+        project.laborTable.push({ ...record, id: data.id });
+      }
+      return data.id;
+    } else {
+      throw new Error(data.statusMessage || "Failed to add labor record");
+    }
+  } catch (error) {
+    console.error("Error adding labor record:", error);
+    alert("Error adding labor record: " + error.message);
+    throw error;
+  }
+},
+
   },
 });
