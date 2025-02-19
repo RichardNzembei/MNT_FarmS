@@ -146,7 +146,7 @@
                     </div>
                 </div>
 
-                <!-- Labor Records Section -->
+                <!-- Harvest Records Section -->
                 <div v-if="currentView === 'harvest'" class="mt-4 sm:mt-8">
                     <div class="flex items-center mb-2 sm:mb-4">
                         <UIcon name="i-lucide-clipboard" class="w-5 h-5 sm:w-6 sm:h-6 text-black mr-2" />
@@ -163,7 +163,7 @@
                             <label for="date" class="text-black text-xs sm:text-sm">Date</label>
                             <input v-model="newHarvest.date" type="date" required
                                 class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newHarvest.quantity" placeholder="Number of (kgs/crts/pcs)" required
+                            <input v-model="newHarvest.quantity" placeholder="Number of (kgs/cartons/pieces)" required
                                 class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
                             <input v-model="newHarvest.quality" placeholder="Local/Export" required
                                 class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
@@ -182,10 +182,10 @@
                             <thead>
                                 <tr class="bg-gray-100 border-b border-gray-300">
                                     <th class="p-2 sm:p-3 text-left">Date</th>
-                                    <th class="p-2 sm:p-3 text-left">Quantity(Kgs/cartoons/pieces)</th>
+                                    <th class="p-2 sm:p-3 text-left">Quantity(Kgs/ctns/pcs)</th>
                                     <th class="p-2 sm:p-3 text-left">Quality</th>
                                     <th class="p-2 sm:p-3 text-left">Price</th>
-                                    <th class="p-2 sm:p-3 text-left">Total</th>
+                                    <th class="p-2 sm:p-3 text-left">Total(Ksh)</th>
                                 </tr>
                             </thead>
                             <tbody>
