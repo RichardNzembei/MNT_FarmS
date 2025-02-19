@@ -57,6 +57,7 @@ export default defineEventHandler(async (event) => {
         sprayingTable: [],
         fertilizerTable: [],
         laborTable:[],
+        harvestTable:[],
         status:"",
         createdAt: new Date(),
       });

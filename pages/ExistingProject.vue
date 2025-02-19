@@ -13,11 +13,8 @@
 
     <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Projects</h1>
 
-    <div v-if="loading" class="flex justify-center items-center min-h-[200px]">
-      <div class="w-16 h-16 border-4 border-blue-400 border-dashed rounded-full animate-spin"></div>
-    </div>
 
-    <div v-else-if="projectStore.projects.length === 0" class="text-gray-500 text-center">
+    <div v-if="projectStore.projects.length === 0" class="text-gray-500 text-center">
       No projects available.
     </div>
 
@@ -84,7 +81,6 @@ import { ref, onMounted } from 'vue';
 import { useProjectStore } from '~/stores/project';
 
 const projectStore = useProjectStore();
-const loading = ref(true);
 const projectSettings = ref({});
 
 const toggleSettings = (projectId) => {
@@ -101,8 +97,5 @@ const setStatus = async (projectId, status) => {
   closeSettings(projectId);
 };
 
-onMounted(async () => {
-  await projectStore.fetchProjects();
-  loading.value = false;
-});
+
 </script>

@@ -3,8 +3,8 @@ const baseURL =
 process.env.NODE_ENV === "production"
   ? "https://reubens-farm-s.vercel.app"
   : typeof window !== "undefined" &&
-    window.location.hostname === "10.1.45.234"
-  ? "http://10.1.45.234:3000"
+    window.location.hostname === "10.1.45.30"
+  ? "http://10.1.45.30:3000"
   : "http://localhost:3000";
 export const useProjectStore = defineStore("projects", {
   state: () => ({
@@ -12,26 +12,34 @@ export const useProjectStore = defineStore("projects", {
   }),
   actions: {
     async fetchProjects() {
-     
-
+      console.log("Fetching projects...");
+    
       try {
         const response = await fetch(`${baseURL}/api/projects`);
+        console.log("Response received:", response);
+    
         const data = await response.json();
-
+        console.log("Data parsed successfully:", data);
+    
         if (response.ok) {
+          console.log("Successfully fetched projects.");
+    
           this.projects = data.map((project) => ({
             ...project,
             sprayingTable: project.sprayingTable || [],
             fertilizerTable: project.fertilizerTable || [],
           }));
+    
+          console.log("Projects stored successfully:", this.projects);
         } else {
-          throw new Error(data.statusMessage || "failed to fetch projects");
+          throw new Error(data.statusMessage || "Failed to fetch projects");
         }
       } catch (error) {
         console.error("Error fetching projects:", error);
         alert("Error fetching projects: " + error.message);
       }
     },
+    
 
     async addProject(project) {
    
@@ -152,7 +160,34 @@ async addLaborRecord(projectId, record) {
     alert("Error adding labor record: " + error.message);
     throw error;
   }
+},async addHarvestRecord(projectId, record) {
+  try {
+    // Post the new record to the API
+    const response = await fetch(`${baseURL}/api/harvestRecords`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ projectId, ...record }),
+    });
+    const data = await response.json();
+
+    if (response.ok) {
+      // Update the local project labor table
+      const project = this.projects.find((p) => p.id === projectId);
+      if (project) {
+        project.harvestTable = project.harvestTable || [];
+        project.harvestTable.push({ ...record, id: data.id });
+      }
+      return data.id;
+    } else {
+      throw new Error(data.statusMessage || "Failed to add harvest record");
+    }
+  } catch (error) {
+    console.error("Error adding harvest record:", error);
+    alert("Error adding harvest record: " + error.message);
+    throw error;
+  }
 },
+
 async updateProjectStatus(projectId, status) {
   try {
     const response = await fetch('/api/updateStatus', {
