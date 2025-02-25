@@ -58,22 +58,18 @@
                 <div class="flex flex-wrap sm:justify-center mb-4 sm:mb-6 gap-2 sm:gap-4">
                     <button
                         class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
-                        @click="setView('labour')" :class="{ 'bg-blue-500 text-white': currentView === 'labour' }">
-                        <UIcon name="i-lucide-users" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
-                        Labour
-                    </button>
-                    <button
-                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
                         @click="setView('landPrep')" :class="{ 'bg-blue-500 text-white': currentView === 'landPrep' }">
                         <UIcon name="i-lucide-tractor" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
                         Land Prep
                     </button>
                     <button
                         class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
-                        @click="setView('harvest')" :class="{ 'bg-blue-500 text-white': currentView === 'harvest' }">
-                        <UIcon name="i-lucide-leaf" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
-                        Harvest
+                        @click="setView('labour')" :class="{ 'bg-blue-500 text-white': currentView === 'labour' }">
+                        <UIcon name="i-lucide-users" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
+                        Labour
                     </button>
+
+
                     <button
                         class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
                         @click="setView('spray')" :class="{ 'bg-blue-500 text-white': currentView === 'spray' }">
@@ -86,6 +82,12 @@
                         :class="{ 'bg-blue-500 text-white': currentView === 'fertilizer' }">
                         <UIcon name="i-lucide-package" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
                         Fertilizer
+                    </button>
+                    <button
+                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
+                        @click="setView('harvest')" :class="{ 'bg-blue-500 text-white': currentView === 'harvest' }">
+                        <UIcon name="i-lucide-leaf" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
+                        Harvest
                     </button>
                 </div>
 
@@ -152,8 +154,8 @@
                     </div>
                 </div>
 
-                  <!-- Land Prep Records Section -->
-                  <div v-if="currentView === 'landPrep'" class="mt-4 sm:mt-8">
+                <!-- Land Prep Records Section -->
+                <div v-if="currentView === 'landPrep'" class="mt-4 sm:mt-8">
                     <div class="flex items-center mb-2 sm:mb-4">
                         <UIcon name="i-lucide-shovel" class="w-5 h-5 sm:w-6 sm:h-6 text-black mr-2" />
 
@@ -427,21 +429,21 @@ const newSpraying = ref({ serialNo: '', tradeName: '', regNo: '', activeIngredie
 const newFertilizer = ref({ date: '', type: '', stage: '', purpose: '', name: '' });
 const newLabor = ref({ date: '', numberOfWorkers: '', taskPerformed: '', hoursWorked: '', wageRate: '', cropArea: '' });
 const newHarvest = ref({ date: '', quantity: '', quality: '', pricePerUnit: '' });
-const newLandPrep=ref({date:'', landPrepLabor:'',prepDescription:'', prepPrice:''});
+const newLandPrep = ref({ date: '', landPrepLabor: '', prepDescription: '', prepPrice: '' });
 
 // Form visibility
 const showSprayingForm = ref(false);
 const showFertilizerForm = ref(false);
 const showLaborForm = ref(false);
 const showHarvestForm = ref(false);
-const showLandPrepForm= ref(false)
+const showLandPrepForm = ref(false)
 
 // Saving state flags
 const savingLabor = ref(false);
 const savingSpraying = ref(false);
 const savingFertilizer = ref(false);
 const savingHarvest = ref(false);
-const savingLandPrep=ref(false)
+const savingLandPrep = ref(false)
 
 function toggleFertilizerForm() {
     showFertilizerForm.value = !showFertilizerForm.value;
