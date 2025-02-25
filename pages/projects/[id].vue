@@ -65,7 +65,7 @@
                     <button
                         class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
                         @click="setView('landPrep')" :class="{ 'bg-blue-500 text-white': currentView === 'landPrep' }">
-                        <UIcon name="i-lucide-users" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
+                        <UIcon name="i-lucide-tractor" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
                         Land Prep
                     </button>
                     <button
@@ -152,10 +152,11 @@
                     </div>
                 </div>
 
-                  <!-- Labor Records Section -->
+                  <!-- Land Prep Records Section -->
                   <div v-if="currentView === 'landPrep'" class="mt-4 sm:mt-8">
                     <div class="flex items-center mb-2 sm:mb-4">
-                        <UIcon name="i-lucide-clipboard" class="w-5 h-5 sm:w-6 sm:h-6 text-black mr-2" />
+                        <UIcon name="i-lucide-shovel" class="w-5 h-5 sm:w-6 sm:h-6 text-black mr-2" />
+
                         <h3 class="text-lg sm:text-xl font-semibold text-black">Land Prep Records</h3>
                     </div>
                     <button @click="toggleLandPrepForm"
