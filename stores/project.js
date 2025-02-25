@@ -160,7 +160,9 @@ async addLaborRecord(projectId, record) {
     alert("Error adding labor record: " + error.message);
     throw error;
   }
-},async addHarvestRecord(projectId, record) {
+},
+
+async addHarvestRecord(projectId, record) {
   try {
     // Post the new record to the API
     const response = await fetch(`${baseURL}/api/harvestRecords`, {
@@ -184,6 +186,34 @@ async addLaborRecord(projectId, record) {
   } catch (error) {
     console.error("Error adding harvest record:", error);
     alert("Error adding harvest record: " + error.message);
+    throw error;
+  }
+},
+
+async addLandPrepRecord(projectId, record) {
+  try {
+    // Post the new record to the API
+    const response = await fetch(`${baseURL}/api/landPrepRecords`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ projectId, ...record }),
+    });
+    const data = await response.json();
+
+    if (response.ok) {
+      // Update the local project labor table
+      const project = this.projects.find((p) => p.id === projectId);
+      if (project) {
+        project.landPrepTable = project.landPrepTable || [];
+        project.landPrepTable.push({ ...record, id: data.id });
+      }
+      return data.id;
+    } else {
+      throw new Error(data.statusMessage || "Failed to add land prep record");
+    }
+  } catch (error) {
+    console.error("Error adding land prep record:", error);
+    alert("Error adding land prep record: " + error.message);
     throw error;
   }
 },

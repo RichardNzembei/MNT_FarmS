@@ -64,6 +64,12 @@
                     </button>
                     <button
                         class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
+                        @click="setView('landPrep')" :class="{ 'bg-blue-500 text-white': currentView === 'landPrep' }">
+                        <UIcon name="i-lucide-users" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
+                        Land Prep
+                    </button>
+                    <button
+                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
                         @click="setView('harvest')" :class="{ 'bg-blue-500 text-white': currentView === 'harvest' }">
                         <UIcon name="i-lucide-leaf" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
                         Harvest
@@ -140,6 +146,59 @@
                                     <td class="p-2 sm:p-3">{{ record.wageRate }}</td>
                                     <td class="p-2 sm:p-3">{{ record.cropArea }}</td>
                                     <td class="p-2 sm:p-3">{{ record.numberOfWorkers * record.wageRate }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                  <!-- Labor Records Section -->
+                  <div v-if="currentView === 'landPrep'" class="mt-4 sm:mt-8">
+                    <div class="flex items-center mb-2 sm:mb-4">
+                        <UIcon name="i-lucide-clipboard" class="w-5 h-5 sm:w-6 sm:h-6 text-black mr-2" />
+                        <h3 class="text-lg sm:text-xl font-semibold text-black">Land Prep Records</h3>
+                    </div>
+                    <button @click="toggleLandPrepForm"
+                        class="flex items-center bg-blue-500 text-white py-1 px-3 sm:py-2 sm:px-4 rounded-lg hover:bg-blue-600 transition-all mb-3 sm:mb-4 text-xs sm:text-sm">
+                        <UIcon name="i-lucide-plus" class="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                        {{ showLandPrepForm ? 'Hide Form' : 'Add LandPrep Record' }}
+                    </button>
+                    <form v-if="showLandPrepForm" @submit.prevent="saveLandPrepRecord"
+                        class="bg-gray-50 p-3 sm:p-4 rounded-lg shadow mb-3 sm:mb-4 animate-slide-down">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
+                            <label for="date" class="text-black text-xs sm:text-sm">Date</label>
+                            <input v-model="newLandPrep.date" type="date" required
+                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
+                            <input v-model="newLandPrep.landPrepLabor" placeholder="Land Prep Labor" required
+                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
+                            <input v-model="newLandPrep.prepDescription" placeholder="Land Prep Description" required
+                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
+                            <input v-model="newLandPrep.prepPrice" placeholder="Labor Price" required
+                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
+                        </div>
+                        <button type="submit"
+                            class="bg-green-500 text-white py-1 px-3 sm:py-2 sm:px-4 mt-3 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto text-xs sm:text-sm"
+                            :disabled="savingLandPrep">
+                            {{ savingLandPrep ? 'Saving...' : 'Save' }}
+                        </button>
+                    </form>
+                    <div class="overflow-x-auto mt-2 sm:mt-4 text-black">
+                        <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden text-xs sm:text-sm">
+                            <thead>
+                                <tr class="bg-gray-100 border-b border-gray-300">
+                                    <th class="p-2 sm:p-3 text-left">Date</th>
+                                    <th class="p-2 sm:p-3 text-left">Labour Involved</th>
+                                    <th class="p-2 sm:p-3 text-left">Description</th>
+                                    <th class="p-2 sm:p-3 text-left">Total(KSH)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="record in project.landPrepTable" :key="record.id"
+                                    class="border-t hover:bg-gray-50 transition-colors duration-200">
+                                    <td class="p-2 sm:p-3">{{ record.date }}</td>
+                                    <td class="p-2 sm:p-3">{{ record.landPrepLabor }}</td>
+                                    <td class="p-2 sm:p-3">{{ record.prepDescription }}</td>
+                                    <td class="p-2 sm:p-3">{{ record.prepPrice }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -366,19 +425,22 @@ project.value = projectStore.projects.find(p => p.id === route.params.id);
 const newSpraying = ref({ serialNo: '', tradeName: '', regNo: '', activeIngredients: '', manufacturer: '', agent: '', uses: '', date: '' });
 const newFertilizer = ref({ date: '', type: '', stage: '', purpose: '', name: '' });
 const newLabor = ref({ date: '', numberOfWorkers: '', taskPerformed: '', hoursWorked: '', wageRate: '', cropArea: '' });
-const newHarvest = ref({ date: '', quantity: '', quality: '', pricePerUnit: '' })
+const newHarvest = ref({ date: '', quantity: '', quality: '', pricePerUnit: '' });
+const newLandPrep=ref({date:'', landPrepLabor:'',prepDescription:'', prepPrice:''});
 
 // Form visibility
 const showSprayingForm = ref(false);
 const showFertilizerForm = ref(false);
 const showLaborForm = ref(false);
 const showHarvestForm = ref(false);
+const showLandPrepForm= ref(false)
 
 // Saving state flags
 const savingLabor = ref(false);
 const savingSpraying = ref(false);
 const savingFertilizer = ref(false);
 const savingHarvest = ref(false);
+const savingLandPrep=ref(false)
 
 function toggleFertilizerForm() {
     showFertilizerForm.value = !showFertilizerForm.value;
@@ -391,6 +453,9 @@ function toggleLaborForm() {
 }
 function toggleHarvestForm() {
     showHarvestForm.value = !showHarvestForm.value;
+}
+function toggleLandPrepForm() {
+    showLandPrepForm.value = !showLandPrepForm.value;
 }
 
 
@@ -456,6 +521,23 @@ const saveHarvestRecord = async () => {
         console.error("Error saving Harvest record:", error);
     } finally {
         savingHarvest.value = false;
+    }
+};
+const saveLandPrepRecord = async () => {
+    try {
+        savingLandPrep.value = true;
+        await projectStore.addLandPrepRecord(project.value.id, newLandPrep.value);
+        newLandPrep.value = {
+            date: "",
+            landPrepLabor: "",
+            prepDescription: "",
+            prepPrice: "",
+        };
+        showLandPrepForm.value = false;
+    } catch (error) {
+        console.error("Error saving Land Prep record:", error);
+    } finally {
+        savingLandPrep.value = false;
     }
 };
 
