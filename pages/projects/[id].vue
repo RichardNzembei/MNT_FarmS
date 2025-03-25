@@ -91,9 +91,16 @@
                     </button>
                     <button
                         class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
-                        @click="setView('TotalCost')" :class="{ 'bg-blue-500 text-white': currentView === 'TotalCost' }">
-                        <UIcon name="i-lucide-file" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
+                        @click="setView('TotalCost')"
+                        :class="{ 'bg-blue-500 text-white': currentView === 'TotalCost' }">
+                        <UIcon name="i-lucide-wallet" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
                         Total Costs
+                    </button>
+                    <button
+                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
+                        @click="setView('progress')" :class="{ 'bg-blue-500 text-white': currentView === 'progress' }">
+                        <UIcon name="i-lucide-bar-chart" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
+                        Progress
                     </button>
                 </div>
 
@@ -395,6 +402,84 @@
                         </table>
                     </div>
                 </div>
+                <!-- Total Costs Records Section -->
+                <div v-if="currentView === 'TotalCost'" class="mt-4 sm:mt-8">
+                    <div class="flex items-center mb-2 sm:mb-4">
+                        <UIcon name="i-lucide-clipboard" class="w-5 h-5 sm:w-6 sm:h-6 text-black mr-2" />
+                        <h3 class="text-lg sm:text-xl font-semibold text-black">Total Costs</h3>
+                    </div>
+                    <div class="overflow-x-auto mt-2 sm:mt-4 text-black">
+                        <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden text-xs sm:text-sm">
+                            <thead>
+                                <tr class="bg-gray-100 border-b border-gray-300">
+                                    <th class="p-2 sm:p-3 text-left">Revenue</th>
+                                    <th class="p-2 sm:p-3 text-left">Labour</th>
+                                    <th class="p-2 sm:p-3 text-left">Land Prep</th>
+                                    <th class="p-2 sm:p-3 text-left">Harvest</th>
+                                    <th class="p-2 sm:p-3 text-left">Profits</th>
+                                    <th class="p-2 sm:p-3 text-left">Loss</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="record in project.harvestTable" :key="record.id"
+                                    class="border-t hover:bg-gray-50 transition-colors duration-200">
+                                    <td class="p-2 sm:p-3">.</td>
+                                    <td class="p-2 sm:p-3">..</td>
+                                    <td class="p-2 sm:p-3">..</td>
+                                    <td class="p-2 sm:p-3">..</td>
+                                    <td class="p-2 sm:p-3">..</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Progress Records Section -->
+                <div v-if="currentView === 'progress'" class="mt-4 sm:mt-8">
+                    <div class="flex items-center mb-2 sm:mb-4">
+                        <UIcon name="i-lucide-clipboard" class="w-5 h-5 sm:w-6 sm:h-6 text-black mr-2" />
+                        <h3 class="text-lg sm:text-xl font-semibold text-black">Project Progress</h3>
+                    </div>
+                    <button @click="toggleProgressForm"
+                        class="flex items-center bg-blue-500 text-white py-1 px-3 sm:py-2 sm:px-4 rounded-lg hover:bg-blue-600 transition-all mb-3 sm:mb-4 text-xs sm:text-sm">
+                        <UIcon name="i-lucide-plus" class="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                        {{ showProgressForm ? 'Hide Form' : 'Add Progress Record' }}
+                    </button>
+                    <form v-if="showProgressForm" @submit.prevent="saveProgressRecord" :key="formKey"
+                        class="bg-white p-4 sm:p-6 rounded-xl shadow-lg mb-4 animate-slide-down border border-gray-200">
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            <div class="flex flex-col">
+                                <label for="date" class="text-gray-700 text-sm font-medium">Date</label>
+                                <input v-model="newProgress.date" type="date" required
+                                    class="border border-gray-300 p-2 w-full bg-gray-50 text-gray-900 rounded-lg shadow-sm focus:ring-2 focus:ring-green-400 focus:border-green-400 transition" />
+                            </div>
+                            <div class="flex flex-col">
+                                <label for="stage" class="text-gray-700 text-sm font-medium">Stage</label>
+                                <input v-model="newProgress.stage" placeholder="Crop Stage" required
+                                    class="border border-gray-300 p-2 w-full bg-gray-50 text-gray-900 rounded-lg shadow-sm focus:ring-2 focus:ring-green-400 focus:border-green-400 transition" />
+                            </div>
+                            <div>
+                                <label for="crop-image" class="text-gray-700 text-sm font-medium block mb-1">Upload
+                                    Image</label>
+                                <input type="file" id="product-image" @change="handleImageUpload" accept="image/*"
+                                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400 bg-gray-50 text-gray-700 transition-all" />
+
+                                <img v-if="imagePreview" :src="imagePreview" alt="Image preview"
+                                    class="mt-3 w-36 h-36 object-cover rounded-lg shadow-md border border-gray-200" />
+                            </div>
+                        </div>
+                        <button type="submit"
+                            class="bg-green-500 text-white py-2 px-5 mt-4 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto text-sm font-semibold shadow-md"
+                            :disabled="savingProgress">
+                            {{ savingProgress ? 'Saving...' : 'Save' }}
+                        </button>
+                    </form>
+
+                    <div class="overflow-x-auto mt-2 sm:mt-4 text-black">
+
+                    </div>
+                </div>
+
 
                 <!-- Generate Report Button -->
                 <div class="text-center mt-4 sm:mt-6">
@@ -424,6 +509,49 @@ const route = useRoute();
 const projectStore = useProjectStore();
 const loading = ref(false)
 const project = ref(null);
+const formKey = ref(0);
+
+const resetForm = () => {
+    newProgress.value = { date: "", stage: "" };
+    imageFile.value = null;
+    imagePreview.value = null;
+    formKey.value += 1;
+};
+
+const saveProgressRecord = async () => {
+    try {
+        savingProgressPrep.value = true;
+        await projectStore.addProgressPrepRecord(project.value.id, newProgress.value);
+        resetForm();
+        showProgressPrepForm.value = false;
+    } catch (error) {
+        console.error("Error saving Progress record:", error);
+    } finally {
+        savingProgressPrep.value = false;
+    }
+};
+const handleImageUpload = (event) => {
+    if (!event?.target?.files?.length) {
+        console.error("No file selected.");
+        return;
+    }
+
+    const file = event.target.files[0];
+    if (!file.type.startsWith("image/")) {
+        console.error("Selected file is not an image.");
+        return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        console.error("File size exceeds 2MB.");
+        return;
+    }
+
+    imageFile.value = file;
+    const reader = new FileReader();
+    reader.onload = (e) => (imagePreview.value = e.target.result);
+    reader.readAsDataURL(file);
+};
 
 
 project.value = projectStore.projects.find(p => p.id === route.params.id);
@@ -436,6 +564,8 @@ const newFertilizer = ref({ date: '', type: '', stage: '', purpose: '', name: ''
 const newLabor = ref({ date: '', numberOfWorkers: '', taskPerformed: '', hoursWorked: '', wageRate: '', cropArea: '' });
 const newHarvest = ref({ date: '', quantity: '', quality: '', pricePerUnit: '' });
 const newLandPrep = ref({ date: '', landPrepLabor: '', prepDescription: '', prepPrice: '' });
+const newProgress = ref({ date: '', stage: "" })
+
 
 // Form visibility
 const showSprayingForm = ref(false);
@@ -443,6 +573,7 @@ const showFertilizerForm = ref(false);
 const showLaborForm = ref(false);
 const showHarvestForm = ref(false);
 const showLandPrepForm = ref(false)
+const showProgressForm = ref(false)
 
 // Saving state flags
 const savingLabor = ref(false);
@@ -465,6 +596,9 @@ function toggleHarvestForm() {
 }
 function toggleLandPrepForm() {
     showLandPrepForm.value = !showLandPrepForm.value;
+}
+function toggleProgressForm() {
+    showProgressForm.value = !showProgressForm.value
 }
 
 
@@ -509,7 +643,7 @@ const saveLaborRecord = async () => {
         };
         showLaborForm.value = false;
     } catch (error) {
-        console.error("Error saving labor record:", error);
+        console.error("Error saving labor {{ record.quantity * record.pricePerUnit }}record:", error);
     } finally {
         savingLabor.value = false;
     }
