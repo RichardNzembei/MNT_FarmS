@@ -518,18 +518,7 @@ const resetForm = () => {
     formKey.value += 1;
 };
 
-const saveProgressRecord = async () => {
-    try {
-        savingProgressPrep.value = true;
-        await projectStore.addProgressPrepRecord(project.value.id, newProgress.value);
-        resetForm();
-        showProgressPrepForm.value = false;
-    } catch (error) {
-        console.error("Error saving Progress record:", error);
-    } finally {
-        savingProgressPrep.value = false;
-    }
-};
+
 const handleImageUpload = (event) => {
     if (!event?.target?.files?.length) {
         console.error("No file selected.");
@@ -681,6 +670,18 @@ const saveLandPrepRecord = async () => {
         console.error("Error saving Land Prep record:", error);
     } finally {
         savingLandPrep.value = false;
+    }
+};
+const saveProgressRecord = async () => {
+    try {
+        savingProgressPrep.value = true;
+        await projectStore.addProgressPrepRecord(project.value.id, newProgress.value);
+        resetForm();
+        showProgressPrepForm.value = false;
+    } catch (error) {
+        console.error("Error saving Progress record:", error);
+    } finally {
+        savingProgressPrep.value = false;
     }
 };
 
