@@ -89,6 +89,12 @@
                         <UIcon name="i-lucide-leaf" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
                         Harvest
                     </button>
+                    <button
+                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
+                        @click="setView('TotalCost')" :class="{ 'bg-blue-500 text-white': currentView === 'TotalCost' }">
+                        <UIcon name="i-lucide-leaf" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
+                        Total Costa
+                    </button>
                 </div>
 
                 <!-- Labor Records Section -->
