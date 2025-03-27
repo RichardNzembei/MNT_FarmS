@@ -3,7 +3,7 @@
         <!-- Back Button -->
         <NuxtLink to="/existingproject"
             class="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-all duration-300">
-            <UIcon name="i-lucide-arrow-left"
+            <UIcon name="i-mdi-arrow-left"
                 class="w-5 h-5 sm:w-6 sm:h-6 mr-2 transition-transform hover:-translate-x-2" />
             <span class="text-xs sm:text-sm font-medium">Back</span>
         </NuxtLink>
@@ -475,8 +475,77 @@
                         </button>
                     </form>
 
-                    <div class="overflow-x-auto mt-2 sm:mt-4 text-black">
+                    <div class="overflow-x-auto mt-4 md:mt-6 text-black">
+                        <div
+                            class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+                            <div v-for="record in project.progressTable" :key="record.id"
+                                class="bg-white rounded-lg md:rounded-2xl shadow-md sm:shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group">
+                                <div class="relative">
+                                    <img :src="record.imageUrl" alt="Progress Image"
+                                        class="w-full h-48 xs:h-56 sm:h-64 md:h-72 object-cover rounded-t-lg md:rounded-t-2xl transition-opacity duration-300 group-hover:opacity-90" />
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-t-lg md:rounded-t-2xl">
+                                    </div>
+                                    <div class="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-5 w-5 sm:h-6 sm:w-6 text-white mr-1 sm:mr-2" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span
+                                            class="text-white font-medium text-sm sm:text-base md:text-lg drop-shadow-md">{{
+                                            record.date }}</span>
+                                    </div>
+                                </div>
 
+                                <div class="p-3 sm:p-4 md:p-6">
+                                    <div class="flex items-start">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600 mt-0.5 mr-2 flex-shrink-0"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                        </svg>
+                                        <div>
+                                            <h3 class="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1">{{
+                                                record.stage }}</h3>
+                                            <p class="text-gray-600 text-xs sm:text-sm flex items-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-3 w-3 sm:h-4 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                Last updated: {{ record.lastUpdated || 'Recently' }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-100 flex flex-col xs:flex-row xs:justify-between xs:items-center gap-2">
+                                        <button
+                                            class="text-indigo-600 hover:text-indigo-800 font-medium flex items-center transition-colors text-sm sm:text-base">
+                                            View details
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 ml-1"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </button>
+                                        <div class="flex justify-end xs:justify-start">
+                                            <span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-semibold"
+                                                :class="record.status === 'Completed' ? 'bg-green-100 text-green-800' :
+                                                    record.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
+                                                        'bg-yellow-100 text-yellow-800'">
+                                                {{ record.status }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -499,7 +568,8 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useProjectStore } from '~/stores/project';
 import * as XLSX from 'xlsx';
-
+const imageFile = ref(null)
+const imagePreview = ref(null)
 const currentView = ref('labour');
 const setView = (view) => {
     currentView.value = view;
@@ -570,6 +640,7 @@ const savingSpraying = ref(false);
 const savingFertilizer = ref(false);
 const savingHarvest = ref(false);
 const savingLandPrep = ref(false)
+const savingProgress = ref(false);
 
 function toggleFertilizerForm() {
     showFertilizerForm.value = !showFertilizerForm.value;
@@ -673,15 +744,24 @@ const saveLandPrepRecord = async () => {
     }
 };
 const saveProgressRecord = async () => {
+    if (!project.value || !project.value.id) {
+        console.error("Project is not defined or missing an ID.");
+        return;
+    }
+
     try {
-        savingProgressPrep.value = true;
-        await projectStore.addProgressPrepRecord(project.value.id, newProgress.value);
+        savingProgress.value = true;
+        await projectStore.addProgressPrepRecord(
+            project.value.id,
+            newProgress.value,
+            imageFile.value
+        );
         resetForm();
-        showProgressPrepForm.value = false;
+        showProgressForm.value = false;
     } catch (error) {
-        console.error("Error saving Progress record:", error);
+        console.error("Error saving progress record:", error);
     } finally {
-        savingProgressPrep.value = false;
+        savingProgress.value = false;
     }
 };
 

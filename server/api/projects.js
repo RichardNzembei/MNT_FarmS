@@ -1,5 +1,4 @@
 import getFirebaseAdmin from "../firebase";
-import * as admin from "firebase-admin";
 
 export default defineEventHandler(async (event) => {
   setResponseHeaders(event, {
@@ -13,7 +12,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const firestore = getFirebaseAdmin();
+  const {firestore} = getFirebaseAdmin();
     if (!firestore) {
       throw createError({
         statusCode: 500,

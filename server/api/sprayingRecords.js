@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const firestore = getFirebaseAdmin();
+    const {firestore} = getFirebaseAdmin();
     if (!firestore) {
       throw createError({
         statusCode: 500,

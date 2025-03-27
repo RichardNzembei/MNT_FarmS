@@ -12,7 +12,8 @@ export default function getFirebaseAdmin() {
         try {
             admin.initializeApp({
                 credential: admin.credential.cert(JSON.parse(serviceAccountKey)),
-                databaseURL: process.env.FIREBASE_DATABASE_URL
+                databaseURL: process.env.FIREBASE_DATABASE_URL,
+                storageBucket:process.env.FIREBASE_STORAGE_BUCKET
             });
         } catch (error) {
             console.error('Error parsing Firebase service account key:', error);
@@ -20,5 +21,9 @@ export default function getFirebaseAdmin() {
         }
     }
 
-    return admin.firestore();
+return {
+   firestore: admin.firestore(),
+   storageBucket:admin.storage().bucket(),
+}
+    
 }
