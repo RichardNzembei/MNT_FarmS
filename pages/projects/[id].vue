@@ -1,829 +1,1345 @@
 <template>
-    <div class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen p-4 sm:p-8">
-        <!-- Back Button -->
-        <NuxtLink to="/existingproject"
-            class="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-all duration-300">
-            <UIcon name="i-mdi-arrow-left"
-                class="w-5 h-5 sm:w-6 sm:h-6 mr-2 transition-transform hover:-translate-x-2" />
-            <span class="text-xs sm:text-sm font-medium">Back</span>
-        </NuxtLink>
-
-        <div class="flex items-center justify-center">
-            <div v-if="!project" class="text-gray-500 text-base sm:text-xl font-semibold animate-pulse">
-                project not found
-            </div>
-
-            <div v-else
-                class="w-full max-w-4xl bg-white p-4 sm:p-8 rounded-lg shadow-lg animate-fade-in transition-transform transform hover:scale-105">
-                <!-- Header -->
-                <div class="flex items-center mb-4 sm:mb-6 space-x-2 sm:space-x-4">
-                    <UIcon name="i-lucide-file" class="w-6 h-6 sm:w-10 sm:h-10 text-sky-500" />
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-green-700 tracking-wide">
-                        Project Details
-                    </h2>
-                </div>
-
-                <!-- Project Info -->
-                <div class="mb-4 sm:mb-6">
-                    <h3
-                        class="flex items-center text-xl sm:text-2xl font-semibold text-gray-800 space-x-2 sm:space-x-3">
-                        <UIcon name="i-lucide-briefcase" class="w-6 h-6 sm:w-7 sm:h-7 text-green-500 animate-bounce" />
-                        <span>{{ project.projectName }}</span>
-                    </h3>
-                    <p class="mt-2 sm:mt-4 text-base sm:text-lg text-gray-700 leading-relaxed">
-                        {{ project.description }}
-                    </p>
-                    <div class="mt-2 sm:mt-4 space-y-1 text-xs sm:text-base text-gray-700">
-                        <p>
-                            <span class="font-medium text-gray-800">Duration:</span>
-                            {{ project.duration }} months
-                        </p>
-                        <p>
-                            <span class="font-medium text-gray-800">Start Date:</span>
-                            {{ project.startDate }}
-                        </p>
-                        <p>
-                            <span class="font-medium text-gray-800">Land Size:</span>
-                            {{ project.landSize }} Acres
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Records Heading -->
-                <div class="text-center mb-3 sm:mb-4">
-                    <h1 class="text-green-500 text-2xl sm:text-3xl font-semibold mb-1">Records</h1>
-                </div>
-
-                <!-- Records Navigation -->
-                <div class="flex flex-wrap sm:justify-center mb-4 sm:mb-6 gap-2 sm:gap-4">
-                    <button
-                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
-                        @click="setView('landPrep')" :class="{ 'bg-blue-500 text-white': currentView === 'landPrep' }">
-                        <UIcon name="i-lucide-tractor" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
-                        Land Prep
-                    </button>
-                    <button
-                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
-                        @click="setView('labour')" :class="{ 'bg-blue-500 text-white': currentView === 'labour' }">
-                        <UIcon name="i-lucide-users" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
-                        Labour
-                    </button>
-
-
-                    <button
-                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
-                        @click="setView('spray')" :class="{ 'bg-blue-500 text-white': currentView === 'spray' }">
-                        <UIcon name="i-lucide-droplet" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
-                        Spray
-                    </button>
-                    <button
-                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
-                        @click="setView('fertilizer')"
-                        :class="{ 'bg-blue-500 text-white': currentView === 'fertilizer' }">
-                        <UIcon name="i-lucide-package" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
-                        Fertilizer
-                    </button>
-                    <button
-                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
-                        @click="setView('harvest')" :class="{ 'bg-blue-500 text-white': currentView === 'harvest' }">
-                        <UIcon name="i-lucide-leaf" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
-                        Harvest
-                    </button>
-                    <button
-                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
-                        @click="setView('TotalCost')"
-                        :class="{ 'bg-blue-500 text-white': currentView === 'TotalCost' }">
-                        <UIcon name="i-lucide-wallet" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
-                        Total Costs
-                    </button>
-                    <button
-                        class="flex items-center justify-center border border-blue-500 text-blue-500 py-1 px-3 sm:py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 ease-in-out transform hover:bg-blue-500 hover:text-white"
-                        @click="setView('progress')" :class="{ 'bg-blue-500 text-white': currentView === 'progress' }">
-                        <UIcon name="i-lucide-bar-chart" class="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
-                        Progress
-                    </button>
-                </div>
-
-                <!-- Labor Records Section -->
-                <div v-if="currentView === 'labour'" class="mt-4 sm:mt-8">
-                    <div class="flex items-center mb-2 sm:mb-4">
-                        <UIcon name="i-lucide-clipboard" class="w-5 h-5 sm:w-6 sm:h-6 text-black mr-2" />
-                        <h3 class="text-lg sm:text-xl font-semibold text-black">Labor Records</h3>
-                    </div>
-                    <button @click="toggleLaborForm"
-                        class="flex items-center bg-blue-500 text-white py-1 px-3 sm:py-2 sm:px-4 rounded-lg hover:bg-blue-600 transition-all mb-3 sm:mb-4 text-xs sm:text-sm">
-                        <UIcon name="i-lucide-plus" class="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                        {{ showLaborForm ? 'Hide Form' : 'Add Labor Record' }}
-                    </button>
-                    <form v-if="showLaborForm" @submit.prevent="saveLaborRecord"
-                        class="bg-gray-50 p-3 sm:p-4 rounded-lg shadow mb-3 sm:mb-4 animate-slide-down">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
-                            <label for="date" class="text-black text-xs sm:text-sm">Date</label>
-                            <input v-model="newLabor.date" type="date" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newLabor.numberOfWorkers" placeholder="Number of Workers" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newLabor.taskPerformed" placeholder="Task Performed" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newLabor.hoursWorked" placeholder="Hours Worked" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newLabor.wageRate" placeholder="Wage Rate" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newLabor.cropArea" placeholder="Crop Area" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                        </div>
-                        <button type="submit"
-                            class="bg-green-500 text-white py-1 px-3 sm:py-2 sm:px-4 mt-3 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto text-xs sm:text-sm"
-                            :disabled="savingLabor">
-                            {{ savingLabor ? 'Saving...' : 'Save' }}
-                        </button>
-                    </form>
-                    <div class="overflow-x-auto mt-2 sm:mt-4 text-black">
-                        <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden text-xs sm:text-sm">
-                            <thead>
-                                <tr class="bg-gray-100 border-b border-gray-300">
-                                    <th class="p-2 sm:p-3 text-left">Date</th>
-                                    <th class="p-2 sm:p-3 text-left">Workers</th>
-                                    <th class="p-2 sm:p-3 text-left">Task</th>
-                                    <th class="p-2 sm:p-3 text-left">Hours</th>
-                                    <th class="p-2 sm:p-3 text-left">Wage(Per/W)</th>
-                                    <th class="p-2 sm:p-3 text-left">Area(Acres)</th>
-                                    <th class="p-2 sm:p-3 text-left">Total(KSH)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="record in project.laborTable" :key="record.id"
-                                    class="border-t hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="p-2 sm:p-3">{{ record.date }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.numberOfWorkers }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.taskPerformed }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.hoursWorked }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.wageRate }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.cropArea }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.numberOfWorkers * record.wageRate }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Land Prep Records Section -->
-                <div v-if="currentView === 'landPrep'" class="mt-4 sm:mt-8">
-                    <div class="flex items-center mb-2 sm:mb-4">
-                        <UIcon name="i-lucide-shovel" class="w-5 h-5 sm:w-6 sm:h-6 text-black mr-2" />
-
-                        <h3 class="text-lg sm:text-xl font-semibold text-black">Land Prep Records</h3>
-                    </div>
-                    <button @click="toggleLandPrepForm"
-                        class="flex items-center bg-blue-500 text-white py-1 px-3 sm:py-2 sm:px-4 rounded-lg hover:bg-blue-600 transition-all mb-3 sm:mb-4 text-xs sm:text-sm">
-                        <UIcon name="i-lucide-plus" class="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                        {{ showLandPrepForm ? 'Hide Form' : 'Add LandPrep Record' }}
-                    </button>
-                    <form v-if="showLandPrepForm" @submit.prevent="saveLandPrepRecord"
-                        class="bg-gray-50 p-3 sm:p-4 rounded-lg shadow mb-3 sm:mb-4 animate-slide-down">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
-                            <label for="date" class="text-black text-xs sm:text-sm">Date</label>
-                            <input v-model="newLandPrep.date" type="date" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newLandPrep.landPrepLabor" placeholder="Land Prep Labor" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newLandPrep.prepDescription" placeholder="Land Prep Description" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newLandPrep.prepPrice" placeholder="Labor Price" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                        </div>
-                        <button type="submit"
-                            class="bg-green-500 text-white py-1 px-3 sm:py-2 sm:px-4 mt-3 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto text-xs sm:text-sm"
-                            :disabled="savingLandPrep">
-                            {{ savingLandPrep ? 'Saving...' : 'Save' }}
-                        </button>
-                    </form>
-                    <div class="overflow-x-auto mt-2 sm:mt-4 text-black">
-                        <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden text-xs sm:text-sm">
-                            <thead>
-                                <tr class="bg-gray-100 border-b border-gray-300">
-                                    <th class="p-2 sm:p-3 text-left">Date</th>
-                                    <th class="p-2 sm:p-3 text-left">Labour Involved</th>
-                                    <th class="p-2 sm:p-3 text-left">Description</th>
-                                    <th class="p-2 sm:p-3 text-left">Total(KSH)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="record in project.landPrepTable" :key="record.id"
-                                    class="border-t hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="p-2 sm:p-3">{{ record.date }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.landPrepLabor }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.prepDescription }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.prepPrice }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Harvest Records Section -->
-                <div v-if="currentView === 'harvest'" class="mt-4 sm:mt-8">
-                    <div class="flex items-center mb-2 sm:mb-4">
-                        <UIcon name="i-lucide-clipboard" class="w-5 h-5 sm:w-6 sm:h-6 text-black mr-2" />
-                        <h3 class="text-lg sm:text-xl font-semibold text-black">Harvest Records</h3>
-                    </div>
-                    <button @click="toggleHarvestForm"
-                        class="flex items-center bg-blue-500 text-white py-1 px-3 sm:py-2 sm:px-4 rounded-lg hover:bg-blue-600 transition-all mb-3 sm:mb-4 text-xs sm:text-sm">
-                        <UIcon name="i-lucide-plus" class="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                        {{ showHarvestForm ? 'Hide Form' : 'Add Harvest Record' }}
-                    </button>
-                    <form v-if="showHarvestForm" @submit.prevent="saveHarvestRecord"
-                        class="bg-gray-50 p-3 sm:p-4 rounded-lg shadow mb-3 sm:mb-4 animate-slide-down">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
-                            <label for="date" class="text-black text-xs sm:text-sm">Date</label>
-                            <input v-model="newHarvest.date" type="date" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newHarvest.quantity" placeholder="Number of (kgs/cartons/pieces)" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newHarvest.quality" placeholder="Local/Export" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newHarvest.pricePerUnit" placeholder="price per unit" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-
-                        </div>
-                        <button type="submit"
-                            class="bg-green-500 text-white py-1 px-3 sm:py-2 sm:px-4 mt-3 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto text-xs sm:text-sm"
-                            :disabled="savingHarvest">
-                            {{ savingHarvest ? 'Saving...' : 'Save' }}
-                        </button>
-                    </form>
-                    <div class="overflow-x-auto mt-2 sm:mt-4 text-black">
-                        <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden text-xs sm:text-sm">
-                            <thead>
-                                <tr class="bg-gray-100 border-b border-gray-300">
-                                    <th class="p-2 sm:p-3 text-left">Date</th>
-                                    <th class="p-2 sm:p-3 text-left">Quantity(Kgs/ctns/pcs)</th>
-                                    <th class="p-2 sm:p-3 text-left">Quality</th>
-                                    <th class="p-2 sm:p-3 text-left">Price</th>
-                                    <th class="p-2 sm:p-3 text-left">Total(Ksh)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="record in project.harvestTable" :key="record.id"
-                                    class="border-t hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="p-2 sm:p-3">{{ record.date }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.quantity }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.quality }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.pricePerUnit }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.quantity * record.pricePerUnit }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Spraying Records Section -->
-                <div v-if="currentView === 'spray'" class="mt-4 sm:mt-8">
-                    <div class="flex items-center mb-2 sm:mb-4">
-                        <UIcon name="i-lucide-search" class="w-5 h-5 sm:w-6 sm:h-6 text-black mr-2" />
-                        <h3 class="text-lg sm:text-xl font-semibold text-black">Spraying Records</h3>
-                    </div>
-                    <button @click="toggleSprayingForm"
-                        class="flex items-center bg-blue-500 text-white py-1 px-3 sm:py-2 sm:px-4 rounded-lg hover:bg-blue-600 transition-all mb-3 sm:mb-4 text-xs sm:text-sm">
-                        <UIcon name="i-lucide-plus" class="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                        {{ showSprayingForm ? 'Hide Form' : 'Add Spraying Record' }}
-                    </button>
-                    <form v-if="showSprayingForm" @submit.prevent="saveSprayingRecord"
-                        class="bg-gray-50 p-3 sm:p-4 rounded-lg shadow mb-3 sm:mb-4 animate-slide-down">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
-                            <label for="date" class="text-black text-xs sm:text-sm">Date</label>
-                            <input v-model="newSpraying.date" type="date" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newSpraying.serialNo" placeholder="Serial No" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newSpraying.tradeName" placeholder="Trade Name" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newSpraying.regNo" placeholder="Registration No"
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newSpraying.activeIngredients" placeholder="Active Ingredients" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newSpraying.manufacturer" placeholder="Manufacturer" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newSpraying.agent" placeholder="Agent" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newSpraying.uses" placeholder="Uses" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                        </div>
-                        <button type="submit"
-                            class="bg-green-500 text-white py-1 px-3 sm:py-2 sm:px-4 mt-3 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto text-xs sm:text-sm"
-                            :disabled="savingSpraying">
-                            {{ savingSpraying ? 'Saving...' : 'Save' }}
-                        </button>
-                    </form>
-                    <div class="overflow-x-auto mt-2 sm:mt-4 text-black">
-                        <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden text-xs sm:text-sm">
-                            <thead>
-                                <tr class="bg-gray-100 border-b border-gray-300">
-                                    <th class="p-2 sm:p-3 text-left">Serial No</th>
-                                    <th class="p-2 sm:p-3 text-left">Trade Name</th>
-                                    <th class="p-2 sm:p-3 text-left">Reg No</th>
-                                    <th class="p-2 sm:p-3 text-left">Active Ingredients</th>
-                                    <th class="p-2 sm:p-3 text-left">Manufacturer</th>
-                                    <th class="p-2 sm:p-3 text-left">Agent</th>
-                                    <th class="p-2 sm:p-3 text-left">Uses</th>
-                                    <th class="p-2 sm:p-3 text-left">Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="record in project.sprayingTable" :key="record.id"
-                                    class="border-t hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="p-2 sm:p-3">{{ record.serialNo }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.tradeName }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.regNo }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.activeIngredients }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.manufacturer }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.agent }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.uses }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.date }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Fertilizer Records Section -->
-                <div v-if="currentView === 'fertilizer'" class="mt-4 sm:mt-8">
-                    <div class="flex items-center mb-2 sm:mb-4">
-                        <UIcon name="i-lucide-box" class="w-5 h-5 sm:w-6 sm:h-6 text-black mr-2" />
-                        <h3 class="text-lg sm:text-xl font-semibold text-black">Fertilizer Records</h3>
-                    </div>
-                    <button @click="toggleFertilizerForm"
-                        class="flex items-center bg-blue-500 text-white py-1 px-3 sm:py-2 sm:px-4 rounded-lg hover:bg-blue-600 transition-all mb-3 sm:mb-4 text-xs sm:text-sm">
-                        <UIcon name="i-lucide-plus" class="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                        {{ showFertilizerForm ? 'Hide Form' : 'Add Fertilizer Record' }}
-                    </button>
-                    <form v-if="showFertilizerForm" @submit.prevent="saveFertilizerRecord"
-                        class="bg-gray-50 p-3 sm:p-4 rounded-lg shadow mb-3 sm:mb-4 animate-slide-down">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
-                            <label for="date" class="text-black text-xs sm:text-sm">Date</label>
-                            <input v-model="newFertilizer.date" type="date" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newFertilizer.stage" placeholder="Stage" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newFertilizer.type" placeholder="Type" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newFertilizer.name" placeholder="Name"
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                            <input v-model="newFertilizer.purpose" placeholder="Purpose" required
-                                class="border p-1 sm:p-2 w-full bg-white text-black rounded text-xs sm:text-sm" />
-                        </div>
-                        <button type="submit"
-                            class="bg-green-500 text-white py-1 px-3 sm:py-2 sm:px-4 mt-3 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto text-xs sm:text-sm"
-                            :disabled="savingFertilizer">
-                            {{ savingFertilizer ? 'Saving...' : 'Save' }}
-                        </button>
-                    </form>
-                    <div class="overflow-x-auto mt-2 sm:mt-4 text-black">
-                        <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden text-xs sm:text-sm">
-                            <thead>
-                                <tr class="bg-gray-100 border-b border-gray-300">
-                                    <th class="p-2 sm:p-3 text-left">Stage</th>
-                                    <th class="p-2 sm:p-3 text-left">Type</th>
-                                    <th class="p-2 sm:p-3 text-left">Name</th>
-                                    <th class="p-2 sm:p-3 text-left">Purpose</th>
-                                    <th class="p-2 sm:p-3 text-left">Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="record in project.fertilizerTable" :key="record.id"
-                                    class="border-t hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="p-2 sm:p-3">{{ record.stage }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.type }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.name }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.purpose }}</td>
-                                    <td class="p-2 sm:p-3">{{ record.date }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <!-- Total Costs Records Section -->
-                <div v-if="currentView === 'TotalCost'" class="mt-4 sm:mt-8">
-                    <div class="flex items-center mb-2 sm:mb-4">
-                        <UIcon name="i-lucide-clipboard" class="w-5 h-5 sm:w-6 sm:h-6 text-black mr-2" />
-                        <h3 class="text-lg sm:text-xl font-semibold text-black">Total Costs</h3>
-                    </div>
-                    <div class="overflow-x-auto mt-2 sm:mt-4 text-black">
-                        <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden text-xs sm:text-sm">
-                            <thead>
-                                <tr class="bg-gray-100 border-b border-gray-300">
-                                    <th class="p-2 sm:p-3 text-left">Revenue</th>
-                                    <th class="p-2 sm:p-3 text-left">Labour</th>
-                                    <th class="p-2 sm:p-3 text-left">Land Prep</th>
-                                    <th class="p-2 sm:p-3 text-left">Harvest</th>
-                                    <th class="p-2 sm:p-3 text-left">Profits</th>
-                                    <th class="p-2 sm:p-3 text-left">Loss</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="record in project.harvestTable" :key="record.id"
-                                    class="border-t hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="p-2 sm:p-3">.</td>
-                                    <td class="p-2 sm:p-3">..</td>
-                                    <td class="p-2 sm:p-3">..</td>
-                                    <td class="p-2 sm:p-3">..</td>
-                                    <td class="p-2 sm:p-3">..</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <!-- Progress Records Section -->
-                <div v-if="currentView === 'progress'" class="mt-4 sm:mt-8">
-                    <div class="flex items-center mb-2 sm:mb-4">
-                        <UIcon name="i-lucide-clipboard" class="w-5 h-5 sm:w-6 sm:h-6 text-black mr-2" />
-                        <h3 class="text-lg sm:text-xl font-semibold text-black">Project Progress</h3>
-                    </div>
-                    <button @click="toggleProgressForm"
-                        class="flex items-center bg-blue-500 text-white py-1 px-3 sm:py-2 sm:px-4 rounded-lg hover:bg-blue-600 transition-all mb-3 sm:mb-4 text-xs sm:text-sm">
-                        <UIcon name="i-lucide-plus" class="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                        {{ showProgressForm ? 'Hide Form' : 'Add Progress Record' }}
-                    </button>
-                    <form v-if="showProgressForm" @submit.prevent="saveProgressRecord" :key="formKey"
-                        class="bg-white p-4 sm:p-6 rounded-xl shadow-lg mb-4 animate-slide-down border border-gray-200">
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            <div class="flex flex-col">
-                                <label for="date" class="text-gray-700 text-sm font-medium">Date</label>
-                                <input v-model="newProgress.date" type="date" required
-                                    class="border border-gray-300 p-2 w-full bg-gray-50 text-gray-900 rounded-lg shadow-sm focus:ring-2 focus:ring-green-400 focus:border-green-400 transition" />
-                            </div>
-                            <div class="flex flex-col">
-                                <label for="stage" class="text-gray-700 text-sm font-medium">Stage</label>
-                                <input v-model="newProgress.stage" placeholder="Crop Stage" required
-                                    class="border border-gray-300 p-2 w-full bg-gray-50 text-gray-900 rounded-lg shadow-sm focus:ring-2 focus:ring-green-400 focus:border-green-400 transition" />
-                            </div>
-                            <div>
-                                <label for="crop-image" class="text-gray-700 text-sm font-medium block mb-1">Upload
-                                    Image</label>
-                                <input type="file" id="product-image" @change="handleImageUpload" accept="image/*"
-                                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400 bg-gray-50 text-gray-700 transition-all" />
-
-                                <img v-if="imagePreview" :src="imagePreview" alt="Image preview"
-                                    class="mt-3 w-36 h-36 object-cover rounded-lg shadow-md border border-gray-200" />
-                            </div>
-                        </div>
-                        <button type="submit"
-                            class="bg-green-500 text-white py-2 px-5 mt-4 rounded-lg hover:bg-green-600 transition-all w-full sm:w-auto text-sm font-semibold shadow-md"
-                            :disabled="savingProgress">
-                            {{ savingProgress ? 'Saving...' : 'Save' }}
-                        </button>
-                    </form>
-
-                    <div class="overflow-x-auto mt-4 md:mt-6 text-black">
-                        <div
-                            class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-                            <div v-for="record in project.progressTable" :key="record.id"
-                                class="bg-white rounded-lg md:rounded-2xl shadow-md sm:shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group">
-                                <div class="relative">
-                                    <img :src="record.imageUrl" alt="Progress Image"
-                                        class="w-full h-48 xs:h-56 sm:h-64 md:h-72 object-cover rounded-t-lg md:rounded-t-2xl transition-opacity duration-300 group-hover:opacity-90" />
-                                    <div
-                                        class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-t-lg md:rounded-t-2xl">
-                                    </div>
-                                    <div class="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 sm:h-6 sm:w-6 text-white mr-1 sm:mr-2" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                        <span
-                                            class="text-white font-medium text-sm sm:text-base md:text-lg drop-shadow-md">{{
-                                            record.date }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="p-3 sm:p-4 md:p-6">
-                                    <div class="flex items-start">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600 mt-0.5 mr-2 flex-shrink-0"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                                        </svg>
-                                        <div>
-                                            <h3 class="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1">{{
-                                                record.stage }}</h3>
-                                            <p class="text-gray-600 text-xs sm:text-sm flex items-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                    class="h-3 w-3 sm:h-4 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24"
-                                                    stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                                Last updated: {{ record.lastUpdated || 'Recently' }}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-100 flex flex-col xs:flex-row xs:justify-between xs:items-center gap-2">
-                                        <button
-                                            class="text-indigo-600 hover:text-indigo-800 font-medium flex items-center transition-colors text-sm sm:text-base">
-                                            View details
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 ml-1"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M9 5l7 7-7 7" />
-                                            </svg>
-                                        </button>
-                                        <div class="flex justify-end xs:justify-start">
-                                            <span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-semibold"
-                                                :class="record.status === 'Completed' ? 'bg-green-100 text-green-800' :
-                                                    record.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
-                                                        'bg-yellow-100 text-yellow-800'">
-                                                {{ record.status }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <!-- Generate Report Button -->
-                <div class="text-center mt-4 sm:mt-6">
-                    <button @click="generateReport"
-                        class="flex items-center justify-center bg-blue-500 text-white py-1 px-3 sm:py-2 sm:px-4 rounded-lg hover:bg-blue-600 transition-all w-full sm:w-auto text-xs sm:text-sm">
-                        <UIcon name="i-lucide-download" class="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                        Download Report
-                    </button>
-                </div>
-            </div>
+    <div class=" p-4 sm:p-6 font-inter antialiased text-stone-800">
+      <!-- Back Button -->
+      <NuxtLink
+        to="/existingproject"
+        class="flex items-center text-emerald-700 hover:text-emerald-800 mb-6 p-3 -ml-3 rounded-full transition-all duration-300 active:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 group"
+        aria-label="Go back to projects"
+      >
+        <UIcon
+          name="i-mdi-arrow-left"
+          class="w-7 h-7 mr-2 transition-transform duration-300 group-hover:-translate-x-1.5"
+        />
+        <span class="text-lg font-semibold tracking-wide">Back to Projects</span>
+      </NuxtLink>
+  
+      <!-- Main Content -->
+      <div class="max-w-md sm:max-w-lg mx-auto">
+        <!-- Loading/Not Found State -->
+        <div v-if="!project" class="bg-white rounded-3xl p-8 text-center shadow-md">
+          <UIcon name="i-mdi-loading" class="w-10 h-10 text-emerald-500 animate-spin mx-auto mb-4" />
+          <p class="text-stone-600 text-lg font-medium">Loading project details...</p>
         </div>
+  
+        <!-- Project Content -->
+        <div v-else class="bg-white rounded-3xl shadow-md overflow-hidden relative">
+          <!-- Decorative Leaf Overlay -->
+          <div class="absolute inset-0 opacity-5 bg-leaf-pattern pointer-events-none"></div>
+  
+          <!-- Project Header -->
+          <div class="p-6 border-b border-stone-100">
+            <div class="flex items-start space-x-5">
+              <div class="bg-emerald-100 p-3 rounded-xl">
+                <UIcon name="i-lucide-file" class="w-8 h-8 text-emerald-600" />
+              </div>
+              <div>
+                <h1 class="text-2xl font-playfair font-bold text-stone-900 line-clamp-2">{{ project.projectName }}</h1>
+                <p class="text-base text-stone-600 mt-2 line-clamp-3">{{ project.description }}</p>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Project Metadata -->
+          <div class="p-6 grid grid-cols-2 gap-5 text-base">
+            <div class="flex items-start space-x-3">
+              <UIcon name="i-lucide-calendar" class="w-6 h-6 text-emerald-500 mt-0.5 flex-shrink-0" />
+              <div>
+                <p class="text-stone-500 text-sm">Duration</p>
+                <p class="font-semibold">{{ project.duration }} months</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-3">
+              <UIcon name="i-lucide-calendar-days" class="w-6 h-6 text-emerald-500 mt-0.5 flex-shrink-0" />
+              <div>
+                <p class="text-stone-500 text-sm">Start Date</p>
+                <p class="font-semibold">{{ project.startDate }}</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-3">
+              <UIcon name="i-lucide-land-plot" class="w-6 h-6 text-emerald-500 mt-0.5 flex-shrink-0" />
+              <div>
+                <p class="text-stone-500 text-sm">Land Size</p>
+                <p class="font-semibold">{{ project.landSize }} Acres</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-3">
+              <UIcon name="i-lucide-bar-chart" class="w-6 h-6 text-emerald-500 mt-0.5 flex-shrink-0" />
+              <div>
+                <p class="text-stone-500 text-sm">Progress</p>
+                <p class="font-semibold">{{ project.progress || 0 }}%</p>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Records Navigation -->
+          <div class="px-6 pb-3 border-b border-stone-100">
+            <div class="relative">
+              <div class="overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-emerald-300">
+                <div class="flex space-x-3 w-max">
+                  <button
+                    v-for="view in views"
+                    :key="view.id"
+                    @click="setView(view.id)"
+                    class="flex items-center px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-300 active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    :class="{
+                      'bg-emerald-100 text-emerald-700': currentView === view.id,
+                      'bg-stone-100 text-stone-700 hover:bg-stone-200': currentView !== view.id
+                    }"
+                    :aria-label="`View ${view.label} records`"
+                    role="tab"
+                    :aria-selected="currentView === view.id"
+                  >
+                    <UIcon :name="view.icon" class="w-5 h-5 mr-2" />
+                    {{ view.label }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Current View Content -->
+          <div class="p-6">
+            <!-- Labor Records -->
+            <section v-if="currentView === 'labour'" class="space-y-6">
+              <div class="flex justify-between items-center">
+                <h2 class="text-xl font-semibold flex items-center">
+                  <UIcon name="i-lucide-users" class="w-6 h-6 text-emerald-600 mr-3" />
+                  Labor Records
+                </h2>
+                <button
+                  @click="toggleForm('labor')"
+                  class="flex items-center bg-emerald-600 text-white py-2.5 px-5 rounded-full active:bg-emerald-700 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  :aria-expanded="showLaborForm"
+                >
+                  <UIcon name="i-lucide-plus" class="w-5 h-5 mr-2" />
+                  {{ showLaborForm ? 'Cancel' : 'Add Record' }}
+                </button>
+              </div>
+  
+              <form
+                v-if="showLaborForm"
+                @submit.prevent="saveLaborRecord"
+                class="bg-emerald-50 p-5 rounded-2xl space-y-5 animation-fade-slide"
+              >
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Date</label>
+                  <input
+                    v-model="newLabor.date"
+                    type="date"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+  
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-stone-700 mb-1.5">Workers</label>
+                    <input
+                      v-model.number="newLabor.numberOfWorkers"
+                      type="number"
+                      placeholder="0"
+                      required
+                      class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-stone-700 mb-1.5">Hours</label>
+                    <input
+                      v-model.number="newLabor.hoursWorked"
+                      type="number"
+                      placeholder="0"
+                      required
+                      class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                    />
+                  </div>
+                </div>
+  
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Task</label>
+                  <input
+                    v-model="newLabor.taskPerformed"
+                    placeholder="Task performed"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+  
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-stone-700 mb-1.5">Wage Rate</label>
+                    <input
+                      v-model.number="newLabor.wageRate"
+                      type="number"
+                      placeholder="Ksh"
+                      required
+                      class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-stone-700 mb-1.5">Area</label>
+                    <input
+                      v-model.number="newLabor.cropArea"
+                      type="number"
+                      placeholder="Acres"
+                      required
+                      class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                    />
+                  </div>
+                </div>
+  
+                <button
+                  type="submit"
+                  class="w-full bg-emerald-600 text-white py-3 px-5 rounded-full active:bg-emerald-700 text-base font-semibold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  :disabled="savingLabor"
+                >
+                  <UIcon v-if="savingLabor" name="i-mdi-loading" class="w-5 h-5 mr-2 animate-spin" />
+                  {{ savingLabor ? 'Saving...' : 'Save Record' }}
+                </button>
+              </form>
+  
+              <div class="space-y-4">
+                <div
+                  v-for="record in project.laborTable"
+                  :key="record.id"
+                  class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 active:bg-emerald-100 transition-all duration-200"
+                >
+                  <div class="grid grid-cols-2 gap-3 text-sm">
+                    <div><span class="font-semibold">Date:</span> {{record.date }}</div>
+                    <div><span class="font-semibold">Workers:</span> {{ record.numberOfWorkers }}</div>
+                    <div><span class="font-semibold">Task:</span> {{ record.taskPerformed }}</div>
+                    <div><span class="font-semibold">Hours:</span> {{ record.hoursWorked }}</div>
+                    <div><span class="font-semibold">Wage:</span> {{ record.wageRate }}</div>
+                    <div><span class="font-semibold">Area:</span> {{ record.cropArea }}</div>
+                    <div class="col-span-2">
+                      <span class="font-semibold">Total:</span>
+                      <span class="text-emerald-600 font-medium">{{record.numberOfWorkers * record.wageRate }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="!project.laborTable.length" class="p-6 text-center text-stone-500 text-base">
+                  No labor records found
+                </div>
+              </div>
+            </section>
+  
+            <!-- Land Prep Records -->
+            <section v-if="currentView === 'landPrep'" class="space-y-6">
+              <div class="flex justify-between items-center">
+                <h2 class="text-xl font-semibold flex items-center">
+                  <UIcon name="i-lucide-shovel" class="w-6 h-6 text-emerald-600 mr-3" />
+                  Land Prep Records
+                </h2>
+                <button
+                  @click="toggleForm('landPrep')"
+                  class="flex items-center bg-emerald-600 text-white py-2.5 px-5 rounded-full active:bg-emerald-700 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  :aria-expanded="showLandPrepForm"
+                >
+                  <UIcon name="i-lucide-plus" class="w-5 h-5 mr-2" />
+                  {{ showLandPrepForm ? 'Cancel' : 'Add Record' }}
+                </button>
+              </div>
+  
+              <form
+                v-if="showLandPrepForm"
+                @submit.prevent="saveLandPrepRecord"
+                class="bg-emerald-50 p-5 rounded-2xl space-y-5 animation-fade-slide"
+              >
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Date</label>
+                  <input
+                    v-model="newLandPrep.date"
+                    type="date"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Labor</label>
+                  <input
+                    v-model="newLandPrep.landPrepLabor"
+                    placeholder="Land Prep Labor"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Description</label>
+                  <input
+                    v-model="newLandPrep.prepDescription"
+                    placeholder="Description"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Price</label>
+                  <input
+                    v-model.number="newLandPrep.prepPrice"
+                    type="number"
+                    placeholder="Labor Price"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="w-full bg-emerald-600 text-white py-3 px-5 rounded-full active:bg-emerald-700 text-base font-semibold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  :disabled="savingLandPrep"
+                >
+                  <UIcon v-if="savingLandPrep" name="i-mdi-loading" class="w-5 h-5 mr-2 animate-spin" />
+                  {{ savingLandPrep ? 'Saving...' : 'Save Record' }}
+                </button>
+              </form>
+  
+              <div class="space-y-4">
+                <div
+                  v-for="record in project.landPrepTable"
+                  :key="record.id"
+                  class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 active:bg-emerald-100 transition-all duration-200"
+                >
+                  <div class="grid grid-cols-2 gap-3 text-sm">
+                    <div><span class="font-semibold">Date:</span> {{ formatDate(record.date) }}</div>
+                    <div><span class="font-semibold">Labor:</span> {{ record.landPrepLabor }}</div>
+                    <div class="col-span-2"><span class="font-semibold">Description:</span> {{ record.prepDescription }}</div>
+                    <div class="col-span-2">
+                      <span class="font-semibold">Total:</span>
+                      <span class="text-emerald-600 font-medium">{{ formatCurrency(record.prepPrice) }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="!project.landPrepTable.length" class="p-6 text-center text-stone-500 text-base">
+                  No land prep records found
+                </div>
+              </div>
+            </section>
+  
+            <!-- Harvest Records -->
+            <section v-if="currentView === 'harvest'" class="space-y-6">
+              <div class="flex justify-between items-center">
+                <h2 class="text-xl font-semibold flex items-center">
+                  <UIcon name="i-lucide-leaf" class="w-6 h-6 text-emerald-600 mr-3" />
+                  Harvest Records
+                </h2>
+                <button
+                  @click="toggleForm('harvest')"
+                  class="flex items-center bg-emerald-600 text-white py-2.5 px-5 rounded-full active:bg-emerald-700 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  :aria-expanded="showHarvestForm"
+                >
+                  <UIcon name="i-lucide-plus" class="w-5 h-5 mr-2" />
+                  {{ showHarvestForm ? 'Cancel' : 'Add Record' }}
+                </button>
+              </div>
+  
+              <form
+                v-if="showHarvestForm"
+                @submit.prevent="saveHarvestRecord"
+                class="bg-emerald-50 p-5 rounded-2xl space-y-5 animation-fade-slide"
+              >
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Date</label>
+                  <input
+                    v-model="newHarvest.date"
+                    type="date"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Quantity</label>
+                  <input
+                    v-model.number="newHarvest.quantity"
+                    type="number"
+                    placeholder="Quantity (kgs/cartons)"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Quality</label>
+                  <input
+                    v-model="newHarvest.quality"
+                    placeholder="Local/Export"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Price/Unit</label>
+                  <input
+                    v-model.number="newHarvest.pricePerUnit"
+                    type="number"
+                    placeholder="Price per Unit"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="w-full bg-emerald-600 text-white py-3 px-5 rounded-full active:bg-emerald-700 text-base font-semibold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  :disabled="savingHarvest"
+                >
+                  <UIcon v-if="savingHarvest" name="i-mdi-loading" class="w-5 h-5 mr-2 animate-spin" />
+                  {{ savingHarvest ? 'Saving...' : 'Save Record' }}
+                </button>
+              </form>
+  
+              <div class="space-y-4">
+                <div
+                  v-for="record in project.harvestTable"
+                  :key="record.id"
+                  class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 active:bg-emerald-100 transition-all duration-200"
+                >
+                  <div class="grid grid-cols-2 gap-3 text-sm">
+                    <div><span class="font-semibold">Date:</span> {{ formatDate(record.date) }}</div>
+                    <div><span class="font-semibold">Quantity:</span> {{ record.quantity }}</div>
+                    <div><span class="font-semibold">Quality:</span> {{ record.quality }}</div>
+                    <div><span class="font-semibold">Price:</span> {{ record.pricePerUnit }}</div>
+                    <div class="col-span-2">
+                      <span class="font-semibold">Total:</span>
+                      <span class="text-emerald-600 font-medium">{{ formatCurrency(record.quantity * record.pricePerUnit) }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="!project.harvestTable.length" class="p-6 text-center text-stone-500 text-base">
+                  No harvest records found
+                </div>
+              </div>
+            </section>
+  
+            <!-- Spray Records -->
+            <section v-if="currentView === 'spray'" class="space-y-6">
+              <div class="flex justify-between items-center">
+                <h2 class="text-xl font-semibold flex items-center">
+                  <UIcon name="i-lucide-droplet" class="w-6 h-6 text-emerald-600 mr-3" />
+                  Spraying Records
+                </h2>
+                <button
+                  @click="toggleForm('spray')"
+                  class="flex items-center bg-emerald-600 text-white py-2.5 px-5 rounded-full active:bg-emerald-700 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  :aria-expanded="showSprayingForm"
+                >
+                  <UIcon name="i-lucide-plus" class="w-5 h-5 mr-2" />
+                  {{ showSprayingForm ? 'Cancel' : 'Add Record' }}
+                </button>
+              </div>
+  
+              <form
+                v-if="showSprayingForm"
+                @submit.prevent="saveSprayingRecord"
+                class="bg-emerald-50 p-5 rounded-2xl space-y-5 animation-fade-slide"
+              >
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Date</label>
+                  <input
+                    v-model="newSpraying.date"
+                    type="date"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Serial No</label>
+                  <input
+                    v-model="newSpraying.serialNo"
+                    placeholder="Serial No"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Trade Name</label>
+                  <input
+                    v-model="newSpraying.tradeName"
+                    placeholder="Trade Name"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Reg No</label>
+                  <input
+                    v-model="newSpraying.regNo"
+                    placeholder="Registration No"
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Ingredients</label>
+                  <input
+                    v-model="newSpraying.activeIngredients"
+                    placeholder="Active Ingredients"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Manufacturer</label>
+                  <input
+                    v-model="newSpraying.manufacturer"
+                    placeholder="Manufacturer"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Agent</label>
+                  <input
+                    v-model="newSpraying.agent"
+                    placeholder="Agent"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Uses</label>
+                  <input
+                    v-model="newSpraying.uses"
+                    placeholder="Uses"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="w-full bg-emerald-600 text-white py-3 px-5 rounded-full active:bg-emerald-700 text-base font-semibold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  :disabled="savingSpraying"
+                >
+                  <UIcon v-if="savingSpraying" name="i-mdi-loading" class="w-5 h-5 mr-2 animate-spin" />
+                  {{ savingSpraying ? 'Saving...' : 'Save Record' }}
+                </button>
+              </form>
+  
+              <div class="space-y-4">
+                <div
+                  v-for="record in project.sprayingTable"
+                  :key="record.id"
+                  class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 active:bg-emerald-100 transition-all duration-200"
+                >
+                  <div class="grid grid-cols-2 gap-3 text-sm">
+                    <div><span class="font-semibold">Serial:</span> {{ record.serialNo }}</div>
+                    <div><span class="font-semibold">Trade:</span> {{ record.tradeName }}</div>
+                    <div><span class="font-semibold">Reg:</span> {{ record.regNo }}</div>
+                    <div><span class="font-semibold">Ingredients:</span> {{ record.activeIngredients }}</div>
+                    <div><span class="font-semibold">Manufacturer:</span> {{ record.manufacturer }}</div>
+                    <div><span class="font-semibold">Agent:</span> {{ record.agent }}</div>
+                    <div><span class="font-semibold">Uses:</span> {{ record.uses }}</div>
+                    <div><span class="font-semibold">Date:</span> {{ formatDate(record.date) }}</div>
+                  </div>
+                </div>
+                <div v-if="!project.sprayingTable.length" class="p-6 text-center text-stone-500 text-base">
+                  No spraying records found
+                </div>
+              </div>
+            </section>
+  
+            <!-- Fertilizer Records -->
+            <section v-if="currentView === 'fertilizer'" class="space-y-6">
+              <div class="flex justify-between items-center">
+                <h2 class="text-xl font-semibold flex items-center">
+                  <UIcon name="i-lucide-package" class="w-6 h-6 text-emerald-600 mr-3" />
+                  Fertilizer Records
+                </h2>
+                <button
+                  @click="toggleForm('fertilizer')"
+                  class="flex items-center bg-emerald-600 text-white py-2.5 px-5 rounded-full active:bg-emerald-700 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  :aria-expanded="showFertilizerForm"
+                >
+                  <UIcon name="i-lucide-plus" class="w-5 h-5 mr-2" />
+                  {{ showFertilizerForm ? 'Cancel' : 'Add Record' }}
+                </button>
+              </div>
+  
+              <form
+                v-if="showFertilizerForm"
+                @submit.prevent="saveFertilizerRecord"
+                class="bg-emerald-50 p-5 rounded-2xl space-y-5 animation-fade-slide"
+              >
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Date</label>
+                  <input
+                    v-model="newFertilizer.date"
+                    type="date"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Stage</label>
+                  <input
+                    v-model="newFertilizer.stage"
+                    placeholder="Stage"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Type</label>
+                  <input
+                    v-model="newFertilizer.type"
+                    placeholder="Type"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Name</label>
+                  <input
+                    v-model="newFertilizer.name"
+                    placeholder="Name"
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Purpose</label>
+                  <input
+                    v-model="newFertilizer.purpose"
+                    placeholder="Purpose"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="w-full bg-emerald-600 text-white py-3 px-5 rounded-full active:bg-emerald-700 text-base font-semibold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  :disabled="savingFertilizer"
+                >
+                  <UIcon v-if="savingFertilizer" name="i-mdi-loading" class="w-5 h-5 mr-2 animate-spin" />
+                  {{ savingFertilizer ? 'Saving...' : 'Save Record' }}
+                </button>
+              </form>
+  
+              <div class="space-y-4">
+                <div
+                  v-for="record in project.fertilizerTable"
+                  :key="record.id"
+                  class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 active:bg-emerald-100 transition-all duration-200"
+                >
+                  <div class="grid grid-cols-2 gap-3 text-sm">
+                    <div><span class="font-semibold">Stage:</span> {{ record.stage }}</div>
+                    <div><span class="font-semibold">Type:</span> {{ record.type }}</div>
+                    <div><span class="font-semibold">Name:</span> {{ record.name }}</div>
+                    <div><span class="font-semibold">Purpose:</span> {{ record.purpose }}</div>
+                    <div><span class="font-semibold">Date:</span> {{ formatDate(record.date) }}</div>
+                  </div>
+                </div>
+                <div v-if="!project.fertilizerTable.length" class="p-6 text-center text-stone-500 text-base">
+                  No fertilizer records found
+                </div>
+              </div>
+            </section>
+  
+            <!-- Total Costs Section -->
+            <section v-if="currentView === 'TotalCost'" class="space-y-6">
+              <h2 class="text-xl font-semibold flex items-center">
+                <UIcon name="i-lucide-wallet" class="w-6 h-6 text-emerald-600 mr-3" />
+                Financial Summary
+              </h2>
+  
+              <div class="bg-emerald-50 rounded-2xl p-5 space-y-5">
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="bg-white p-4 rounded-xl shadow-sm">
+                    <p class="text-sm text-stone-600 mb-1.5">Total Revenue</p>
+                    <p class="text-xl font-bold text-emerald-600">{{ formatCurrency(calculateTotalRevenue()) }}</p>
+                  </div>
+                  <div class="bg-white p-4 rounded-xl shadow-sm">
+                    <p class="text-sm text-stone-600 mb-1.5">Total Costs</p>
+                    <p class="text-xl font-bold text-red-600">{{ formatCurrency(calculateTotalCosts()) }}</p>
+                  </div>
+                </div>
+  
+                <div class="bg-white p-5 rounded-xl">
+                  <p class="text-sm text-stone-600 mb-1.5">Net Profit</p>
+                  <p
+                    class="text-2xl font-bold"
+                    :class="calculateProfit() >= 0 ? 'text-emerald-600' : 'text-red-600'"
+                  >
+                    {{ formatCurrency(calculateProfit()) }}
+                  </p>
+                </div>
+              </div>
+  
+              <div class="space-y-4">
+                <div class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 transition-all duration-200">
+                  <div class="flex justify-between text-sm">
+                    <span class="font-semibold">Labor Costs</span>
+                    <span class="text-emerald-600 font-medium">{{ formatCurrency(calculateLaborCosts()) }}</span>
+                  </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 transition-all duration-200">
+                  <div class="flex justify-between text-sm">
+                    <span class="font-semibold">Land Preparation</span>
+                    <span class="text-emerald-600 font-medium">{{ formatCurrency(calculateLandPrepCosts()) }}</span>
+                  </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 transition-all duration-200">
+                  <div class="flex justify-between text-sm">
+                    <span class="font-semibold">Harvest Revenue</span>
+                    <span class="text-emerald-600 font-medium">{{ formatCurrency(calculateTotalRevenue()) }}</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+  
+            <!-- Progress Records -->
+            <section v-if="currentView === 'progress'" class="space-y-6">
+              <div class="flex justify-between items-center">
+                <h2 class="text-xl font-semibold flex items-center">
+                  <UIcon name="i-lucide-bar-chart-2" class="w-6 h-6 text-emerald-600 mr-3" />
+                  Project Progress
+                </h2>
+                <button
+                  @click="toggleForm('progress')"
+                  class="flex items-center bg-emerald-600 text-white py-2.5 px-5 rounded-full active:bg-emerald-700 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  :aria-expanded="showProgressForm"
+                >
+                  <UIcon name="i-lucide-plus" class="w-5 h-5 mr-2" />
+                  {{ showProgressForm ? 'Cancel' : 'Add Record' }}
+                </button>
+              </div>
+  
+              <form
+                v-if="showProgressForm"
+                @submit.prevent="saveProgressRecord"
+                class="bg-emerald-50 p-5 rounded-2xl space-y-5 animation-fade-slide"
+              >
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Date</label>
+                  <input
+                    v-model="newProgress.date"
+                    type="date"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Stage</label>
+                  <input
+                    v-model="newProgress.stage"
+                    placeholder="Current stage"
+                    required
+                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Upload Image</label>
+                  <div class="mt-1.5 flex items-center">
+                    <label class="cursor-pointer">
+                      <div class="flex items-center justify-center px-5 py-3 border border-stone-300 rounded-lg bg-white text-sm font-semibold text-stone-700 active:bg-stone-50">
+                        <UIcon name="i-lucide-upload" class="w-5 h-5 mr-2" />
+                        Choose File
+                      </div>
+                      <input
+                        type="file"
+                        @change="handleImageUpload"
+                        accept="image/*"
+                        class="sr-only"
+                      />
+                    </label>
+                    <span v-if="imageFile" class="ml-4 text-sm text-stone-600 truncate">{{ imageFile.name }}</span>
+                  </div>
+                  <img
+                    v-if="imagePreview"
+                    :src="imagePreview"
+                    alt="Preview"
+                    class="mt-3 w-full h-auto max-h-56 object-contain rounded-xl border border-stone-200"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="w-full bg-emerald-600 text-white py-3 px-5 rounded-full active:bg-emerald-700 text-base font-semibold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  :disabled="savingProgress"
+                >
+                  <UIcon v-if="savingProgress" name="i-mdi-loading" class="w-5 h-5 mr-2 animate-spin" />
+                  {{ savingProgress ? 'Saving...' : 'Save Progress' }}
+                </button>
+              </form>
+  
+              <div class="space-y-4">
+                <div
+                  v-for="record in project.progressTable"
+                  :key="record.id"
+                  class="bg-white rounded-xl overflow-hidden shadow-sm border border-stone-200 active:scale-[0.98] transition-transform duration-300"
+                >
+                  <div class="relative aspect-video">
+                    <img
+                      :src="record.imageUrl"
+                      :alt="`Progress photo for ${record.stage}`"
+                      class="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-5 flex flex-col justify-end">
+                      <p class="text-white font-semibold text-lg">{{ record.stage }}</p>
+                      <p class="text-white text-sm">{{ record.date}}</p>
+                    </div>
+                  </div>
+                  <div class="p-5">
+                    <div class="flex justify-between items-center">
+                      <button class="text-emerald-600 text-base font-semibold flex items-center">
+                        View Details
+                        <UIcon name="i-lucide-chevron-right" class="w-5 h-5 ml-1" />
+                      </button>
+                      <span
+                        class="px-3 py-1.5 rounded-full text-xs font-semibold"
+                        :class="{
+                          'bg-emerald-100 text-emerald-800': record.status === 'Completed',
+                          'bg-blue-100 text-blue-800': record.status === 'In Progress',
+                          'bg-amber-100 text-amber-800': !record.status || record.status === 'Pending'
+                        }"
+                      >
+                        {{ record.status || 'Recorded' }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="!project.progressTable.length" class="text-center py-8 text-stone-500">
+                  <UIcon name="i-lucide-camera-off" class="w-10 h-10 mx-auto mb-3 text-stone-300" />
+                  <p class="text-base">No progress records yet</p>
+                </div>
+              </div>
+            </section>
+          </div>
+  
+          <!-- Report Generation -->
+          <div class="p-6 border-t border-stone-100 bg-stone-50">
+            <button
+              @click="generateReport"
+              class="w-full flex items-center justify-center bg-emerald-600 text-white py-3 px-5 rounded-full active:bg-emerald-700 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            >
+              <UIcon name="i-lucide-download" class="w-6 h-6 mr-2" />
+              Download Full Report
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-</template>
-
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { useProjectStore } from '~/stores/project';
-import * as XLSX from 'xlsx';
-const imageFile = ref(null)
-const imagePreview = ref(null)
-const currentView = ref('labour');
-const setView = (view) => {
+  </template>
+  
+  <style scoped>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+  
+  /* Font Definitions */
+  .font-inter {
+    font-family: 'Inter', sans-serif;
+  }
+  .font-playfair {
+    font-family: 'Playfair Display', serif;
+  }
+  
+  /* Leaf Pattern Background */
+  .bg-leaf-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 5C15 5 10 10 10 15C10 20 15 25 20 25C25 25 30 20 30 15C30 10 25 5 20 5ZM20 7C24 7 28 11 28 15C28 19 24 23 20 23C16 23 12 19 12 15C12 11 16 7 20 7Z' fill='%2399f6e4'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+  }
+  
+  /* Custom Scrollbar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #6ee7b7 #f5f5f4;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: #f5f5f4;
+    border-radius: 3px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #6ee7b7;
+    border-radius: 3px;
+    transition: background 0.3s;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #10b981;
+  }
+  
+  /* Input Placeholder */
+  input::placeholder {
+    color: #78716c;
+    font-size: 0.875rem;
+    opacity: 0.7;
+  }
+  
+  /* Input Focus Animation */
+  input:focus,
+  input:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+  }
+  
+  /* Card Hover Effect */
+  .card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Disabled Button */
+  button:disabled {
+    background-color: #d6d3d1;
+    color: #78716c;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+  
+  /* Form Animation */
+  .animation-fade-slide {
+    animation: fadeSlide 0.4s ease-out;
+  }
+  @keyframes fadeSlide {
+    from {
+      opacity: 0;
+      transform: translateY(-15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Image Loading Animation */
+  img[loading="lazy"] {
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+  }
+  img[loading="lazy"][src] {
+    opacity: 1;
+  }
+  
+  /* Responsive Typography */
+  h1 {
+    font-size: clamp(1.5rem, 5vw, 1.875rem);
+  }
+  h2 {
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+  }
+  .text-base {
+    font-size: clamp(0.875rem, 3.5vw, 1rem);
+  }
+  .text-sm {
+    font-size: clamp(0.75rem, 3vw, 0.875rem);
+  }
+  
+  /* Aspect Ratio */
+  .aspect-video {
+    aspect-ratio: 16 / 9;
+  }
+  
+  /* Line Clamping */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Touch Targets */
+  button,
+  a,
+  [role="button"] {
+    min-height: 48px;
+    min-width: 48px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Prevent Zoom on Input Focus */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+  
+  /* Active State Effects */
+  .active\:scale-95:active {
+    transform: scale(0.95);
+  }
+  .active\:scale-98:active {
+    transform: scale(0.98);
+  }
+  .active\:bg-emerald-700:active {
+    background-color: #047857;
+  }
+  .active\:bg-stone-50:active {
+    background-color: #f5f5f4;
+  }
+  
+  /* Shadow Sizes */
+  .shadow-sm {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  }
+  .shadow-md {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Focus Rings */
+  .focus\:ring-2:focus {
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.5);
+  }
+  .focus\:border-emerald-500:focus {
+    border-color: #10b981;
+  }
+  </style>
+  <script setup>
+  import { ref, computed } from "vue";
+  import { useRoute } from "vue-router";
+  import { useProjectStore } from "~/stores/project";
+  import * as XLSX from "xlsx";
+  
+  // State Management
+  const route = useRoute();
+  const projectStore = useProjectStore();
+  const project = ref(null);
+  const currentView = ref("labour");
+  const imageFile = ref(null);
+  const imagePreview = ref(null);
+  const loading = ref(false);
+  
+  // Form Visibility
+  const showLaborForm = ref(false);
+  const showLandPrepForm = ref(false);
+  const showHarvestForm = ref(false);
+  const showSprayingForm = ref(false);
+  const showFertilizerForm = ref(false);
+  const showProgressForm = ref(false);
+  
+  // Saving States
+  const savingLabor = ref(false);
+  const savingLandPrep = ref(false);
+  const savingHarvest = ref(false);
+  const savingSpraying = ref(false);
+  const savingFertilizer = ref(false);
+  const savingProgress = ref(false);
+  
+  // Form Data
+  const newLabor = ref({
+    date: "",
+    numberOfWorkers: "",
+    taskPerformed: "",
+    hoursWorked: "",
+    wageRate: "",
+    cropArea: "",
+  });
+  const newLandPrep = ref({
+    date: "",
+    landPrepLabor: "",
+    prepDescription: "",
+    prepPrice: "",
+  });
+  const newHarvest = ref({
+    date: "",
+    quantity: "",
+    quality: "",
+    pricePerUnit: "",
+  });
+  const newSpraying = ref({
+    serialNo: "",
+    tradeName: "",
+    regNo: "",
+    activeIngredients: "",
+    manufacturer: "",
+    agent: "",
+    uses: "",
+    date: "",
+  });
+  const newFertilizer = ref({
+    date: "",
+    type: "",
+    stage: "",
+    purpose: "",
+    name: "",
+  });
+  const newProgress = ref({
+    date: "",
+    stage: "",
+  });
+  
+  // Navigation Views
+  const views = [
+    { id: "labour", label: "Labour", icon: "i-lucide-users" },
+    { id: "landPrep", label: "Land Prep", icon: "i-lucide-tractor" },
+    { id: "harvest", label: "Harvest", icon: "i-lucide-leaf" },
+    { id: "spray", label: "Spray", icon: "i-lucide-droplet" },
+    { id: "fertilizer", label: "Fertilizer", icon: "i-lucide-package" },
+    { id: "TotalCost", label: "Total Costs", icon: "i-lucide-wallet" },
+    { id: "progress", label: "Progress", icon: "i-lucide-bar-chart" },
+  ];
+  
+  // Methods
+  const setView = (view) => {
     currentView.value = view;
-};
-
-const route = useRoute();
-const projectStore = useProjectStore();
-const loading = ref(false)
-const project = ref(null);
-const formKey = ref(0);
-
-const resetForm = () => {
-    newProgress.value = { date: "", stage: "" };
-    imageFile.value = null;
-    imagePreview.value = null;
-    formKey.value += 1;
-};
-
-
-const handleImageUpload = (event) => {
-    if (!event?.target?.files?.length) {
-        console.error("No file selected.");
-        return;
-    }
-
+  };
+  
+  const toggleForm = (formType) => {
+    const forms = {
+      labor: showLaborForm,
+      landPrep: showLandPrepForm,
+      harvest: showHarvestForm,
+      spray: showSprayingForm,
+      fertilizer: showFertilizerForm,
+      progress: showProgressForm,
+    };
+    forms[formType].value = !forms[formType].value;
+  };
+  
+  const handleImageUpload = (event) => {
+    if (!event?.target?.files?.length) return;
     const file = event.target.files[0];
-    if (!file.type.startsWith("image/")) {
-        console.error("Selected file is not an image.");
-        return;
-    }
-
-    if (file.size > 2 * 1024 * 1024) { // 2MB limit
-        console.error("File size exceeds 2MB.");
-        return;
-    }
-
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 2 * 1024 * 1024) return; // 2MB limit
     imageFile.value = file;
     const reader = new FileReader();
     reader.onload = (e) => (imagePreview.value = e.target.result);
     reader.readAsDataURL(file);
-};
-
-
-project.value = projectStore.projects.find(p => p.id === route.params.id);
-
-
-
-// Form data
-const newSpraying = ref({ serialNo: '', tradeName: '', regNo: '', activeIngredients: '', manufacturer: '', agent: '', uses: '', date: '' });
-const newFertilizer = ref({ date: '', type: '', stage: '', purpose: '', name: '' });
-const newLabor = ref({ date: '', numberOfWorkers: '', taskPerformed: '', hoursWorked: '', wageRate: '', cropArea: '' });
-const newHarvest = ref({ date: '', quantity: '', quality: '', pricePerUnit: '' });
-const newLandPrep = ref({ date: '', landPrepLabor: '', prepDescription: '', prepPrice: '' });
-const newProgress = ref({ date: '', stage: "" })
-
-
-// Form visibility
-const showSprayingForm = ref(false);
-const showFertilizerForm = ref(false);
-const showLaborForm = ref(false);
-const showHarvestForm = ref(false);
-const showLandPrepForm = ref(false)
-const showProgressForm = ref(false)
-
-// Saving state flags
-const savingLabor = ref(false);
-const savingSpraying = ref(false);
-const savingFertilizer = ref(false);
-const savingHarvest = ref(false);
-const savingLandPrep = ref(false)
-const savingProgress = ref(false);
-
-function toggleFertilizerForm() {
-    showFertilizerForm.value = !showFertilizerForm.value;
-}
-function toggleSprayingForm() {
-    showSprayingForm.value = !showSprayingForm.value;
-}
-function toggleLaborForm() {
-    showLaborForm.value = !showLaborForm.value;
-}
-function toggleHarvestForm() {
-    showHarvestForm.value = !showHarvestForm.value;
-}
-function toggleLandPrepForm() {
-    showLandPrepForm.value = !showLandPrepForm.value;
-}
-function toggleProgressForm() {
-    showProgressForm.value = !showProgressForm.value
-}
-
-
-
-const saveSprayingRecord = async () => {
+  };
+  
+  const resetForm = () => {
+    newProgress.value = { date: "", stage: "" };
+    imageFile.value = null;
+    imagePreview.value = null;
+  };
+  
+  const saveLaborRecord = async () => {
     try {
-        savingSpraying.value = true;
-        await projectStore.addSprayingRecord(project.value.id, newSpraying.value);
-        newSpraying.value = { serialNo: '', tradeName: '', regNo: '', activeIngredients: '', manufacturer: '', agent: '', uses: '', date: '' };
-        showSprayingForm.value = false;
+      savingLabor.value = true;
+      await projectStore.addLaborRecord(project.value.id, newLabor.value);
+      newLabor.value = {
+        date: "",
+        numberOfWorkers: "",
+        taskPerformed: "",
+        hoursWorked: "",
+        wageRate: "",
+        cropArea: "",
+      };
+      showLaborForm.value = false;
     } catch (error) {
-        console.error("Error saving spraying record:", error);
+      console.error("Error saving labor record:", error);
     } finally {
-        savingSpraying.value = false;
+      savingLabor.value = false;
     }
-};
-
-const saveFertilizerRecord = async () => {
+  };
+  
+  const saveLandPrepRecord = async () => {
     try {
-        savingFertilizer.value = true;
-        await projectStore.addFertilizerRecord(project.value.id, newFertilizer.value);
-        newFertilizer.value = { date: '', type: '', stage: '', name: '', purpose: '' };
-        showFertilizerForm.value = false;
+      savingLandPrep.value = true;
+      await projectStore.addLandPrepRecord(project.value.id, newLandPrep.value);
+      newLandPrep.value = {
+        date: "",
+        landPrepLabor: "",
+        prepDescription: "",
+        prepPrice: "",
+      };
+      showLandPrepForm.value = false;
     } catch (error) {
-        console.error("Error saving fertilizer record:", error);
+      console.error("Error saving land prep record:", error);
     } finally {
-        savingFertilizer.value = false;
+      savingLandPrep.value = false;
     }
-};
-
-const saveLaborRecord = async () => {
+  };
+  
+  const saveHarvestRecord = async () => {
     try {
-        savingLabor.value = true;
-        await projectStore.addLaborRecord(project.value.id, newLabor.value);
-        newLabor.value = {
-            date: "",
-            numberOfWorkers: "",
-            taskPerformed: "",
-            hoursWorked: "",
-            wageRate: "",
-            cropArea: "",
-        };
-        showLaborForm.value = false;
+      savingHarvest.value = true;
+      await projectStore.addHarvestRecord(project.value.id, newHarvest.value);
+      newHarvest.value = {
+        date: "",
+        quantity: "",
+        quality: "",
+        pricePerUnit: "",
+      };
+      showHarvestForm.value = false;
     } catch (error) {
-        console.error("Error saving labor {{ record.quantity * record.pricePerUnit }}record:", error);
+      console.error("Error saving harvest record:", error);
     } finally {
-        savingLabor.value = false;
+      savingHarvest.value = false;
     }
-};
-
-const saveHarvestRecord = async () => {
+  };
+  
+  const saveSprayingRecord = async () => {
     try {
-        savingHarvest.value = true;
-        await projectStore.addHarvestRecord(project.value.id, newHarvest.value);
-        newHarvest.value = {
-            date: "",
-            quantity: "",
-            quality: "",
-            pricePerUnit: "",
-        };
-        showHarvestForm.value = false;
+      savingSpraying.value = true;
+      await projectStore.addSprayingRecord(project.value.id, newSpraying.value);
+      newSpraying.value = {
+        serialNo: "",
+        tradeName: "",
+        regNo: "",
+        activeIngredients: "",
+        manufacturer: "",
+        agent: "",
+        uses: "",
+        date: "",
+      };
+      showSprayingForm.value = false;
     } catch (error) {
-        console.error("Error saving Harvest record:", error);
+      console.error("Error saving spraying record:", error);
     } finally {
-        savingHarvest.value = false;
+      savingSpraying.value = false;
     }
-};
-const saveLandPrepRecord = async () => {
+  };
+  
+  const saveFertilizerRecord = async () => {
     try {
-        savingLandPrep.value = true;
-        await projectStore.addLandPrepRecord(project.value.id, newLandPrep.value);
-        newLandPrep.value = {
-            date: "",
-            landPrepLabor: "",
-            prepDescription: "",
-            prepPrice: "",
-        };
-        showLandPrepForm.value = false;
+      savingFertilizer.value = true;
+      await projectStore.addFertilizerRecord(project.value.id, newFertilizer.value);
+      newFertilizer.value = {
+        date: "",
+        type: "",
+        stage: "",
+        name: "",
+        purpose: "",
+      };
+      showFertilizerForm.value = false;
     } catch (error) {
-        console.error("Error saving Land Prep record:", error);
+      console.error("Error saving fertilizer record:", error);
     } finally {
-        savingLandPrep.value = false;
+      savingFertilizer.value = false;
     }
-};
-const saveProgressRecord = async () => {
-    if (!project.value || !project.value.id) {
-        console.error("Project is not defined or missing an ID.");
-        return;
-    }
-
+  };
+  
+  const saveProgressRecord = async () => {
+    if (!project.value?.id) return;
     try {
-        savingProgress.value = true;
-        await projectStore.addProgressPrepRecord(
-            project.value.id,
-            newProgress.value,
-            imageFile.value
-        );
-        resetForm();
-        showProgressForm.value = false;
+      savingProgress.value = true;
+      await projectStore.addProgressPrepRecord(
+        project.value.id,
+        newProgress.value,
+        imageFile.value
+      );
+      resetForm();
+      showProgressForm.value = false;
     } catch (error) {
-        console.error("Error saving progress record:", error);
+      console.error("Error saving progress record:", error);
     } finally {
-        savingProgress.value = false;
+      savingProgress.value = false;
     }
-};
-
-const generateReport = () => {
+  };
+  
+  const generateReport = () => {
     try {
-        // Prepare spraying data
-        const sprayingSheetData = [
-            ["Serial No", "Trade Name", "Reg No", "Active Ingredients", "Manufacturer", "Agent", "Uses", "Date"],
-            ...project.value.sprayingTable.map(record => [
-                record.serialNo,
-                record.tradeName,
-                record.regNo,
-                record.activeIngredients,
-                record.manufacturer,
-                record.agent,
-                record.uses,
-                record.date
-            ])
-        ];
-
-        // Prepare fertilizer data
-        const fertilizerSheetData = [
-            ["Date", "Stage", "Type", "Name", "Purpose"],
-            ...project.value.fertilizerTable.map(record => [
-                record.date,
-                record.stage,
-                record.type,
-                record.name,
-                record.purpose
-            ])
-        ];
-
-        // Prepare labor data
-        const laborSheetData = [
-            ["Date", "Number of Workers", "Task Performed", "Hours Worked", "Wage Rate", "Total Wages Earned", "Crop/Animal Area"],
-            ...project.value.laborTable.map(record => [
-                record.date,
-                record.numberOfWorkers,
-                record.taskPerformed,
-                record.hoursWorked,
-                record.wageRate,
-                record.numberOfWorkers * record.wageRate,
-                record.cropArea,
-            ])
-        ];
-
-        // Create workbook and sheets
-        const wb = XLSX.utils.book_new();
-        const sprayingSheet = XLSX.utils.aoa_to_sheet(sprayingSheetData);
-        const fertilizerSheet = XLSX.utils.aoa_to_sheet(fertilizerSheetData);
-        XLSX.utils.book_append_sheet(wb, sprayingSheet, "Spraying Records");
-        XLSX.utils.book_append_sheet(wb, fertilizerSheet, "Fertilizer Records");
-
-        // Generate and download the Excel file
-        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-        const blob = new Blob([wbout], { type: 'application/octet-stream' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `${project.value.projectName}-report.xlsx`;
-        link.click();
+      const wb = XLSX.utils.book_new();
+  
+      // Labor Sheet
+      const laborSheetData = [
+        [
+          "Date",
+          "Number of Workers",
+          "Task Performed",
+          "Hours Worked",
+          "Wage Rate",
+          "Total Wages",
+          "Crop Area",
+        ],
+        ...project.value.laborTable.map((record) => [
+          record.date,
+          record.numberOfWorkers,
+          record.taskPerformed,
+          record.hoursWorked,
+          record.wageRate,
+          record.numberOfWorkers * record.wageRate,
+          record.cropArea,
+        ]),
+      ];
+      const laborSheet = XLSX.utils.aoa_to_sheet(laborSheetData);
+      XLSX.utils.book_append_sheet(wb, laborSheet, "Labor Records");
+  
+      // Land Prep Sheet
+      const landPrepSheetData = [
+        ["Date", "Labor", "Description", "Price"],
+        ...project.value.landPrepTable.map((record) => [
+          record.date,
+          record.landPrepLabor,
+          record.prepDescription,
+          record.prepPrice,
+        ]),
+      ];
+      const landPrepSheet = XLSX.utils.aoa_to_sheet(landPrepSheetData);
+      XLSX.utils.book_append_sheet(wb, landPrepSheet, "Land Prep Records");
+  
+      // Harvest Sheet
+      const harvestSheetData = [
+        ["Date", "Quantity", "Quality", "Price/Unit", "Total"],
+        ...project.value.harvestTable.map((record) => [
+          record.date,
+          record.quantity,
+          record.quality,
+          record.pricePerUnit,
+          record.quantity * record.pricePerUnit,
+        ]),
+      ];
+      const harvestSheet = XLSX.utils.aoa_to_sheet(harvestSheetData);
+      XLSX.utils.book_append_sheet(wb, harvestSheet, "Harvest Records");
+  
+      // Spraying Sheet
+      const sprayingSheetData = [
+        [
+          "Serial No",
+          "Trade Name",
+          "Reg No",
+          "Active Ingredients",
+          "Manufacturer",
+          "Agent",
+          "Uses",
+          "Date",
+        ],
+        ...project.value.sprayingTable.map((record) => [
+          record.serialNo,
+          record.tradeName,
+          record.regNo,
+          record.activeIngredients,
+          record.manufacturer,
+          record.agent,
+          record.uses,
+          record.date,
+        ]),
+      ];
+      const sprayingSheet = XLSX.utils.aoa_to_sheet(sprayingSheetData);
+      XLSX.utils.book_append_sheet(wb, sprayingSheet, "Spraying Records");
+  
+      // Fertilizer Sheet
+      const fertilizerSheetData = [
+        ["Date", "Stage", "Type", "Name", "Purpose"],
+        ...project.value.fertilizerTable.map((record) => [
+          record.date,
+          record.stage,
+          record.type,
+          record.name,
+          record.purpose,
+        ]),
+      ];
+      const fertilizerSheet = XLSX.utils.aoa_to_sheet(fertilizerSheetData);
+      XLSX.utils.book_append_sheet(wb, fertilizerSheet, "Fertilizer Records");
+  
+      // Progress Sheet
+      const progressSheetData = [
+        ["Date", "Stage", "Status"],
+        ...project.value.progressTable.map((record) => [
+          record.date,
+          record.stage,
+          record.status,
+        ]),
+      ];
+      const progressSheet = XLSX.utils.aoa_to_sheet(progressSheetData);
+      XLSX.utils.book_append_sheet(wb, progressSheet, "Progress Records");
+  
+      // Generate and Download
+      const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const blob = new Blob([wbout], { type: "application/octet-stream" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `${project.value.projectName}-report.xlsx`;
+      link.click();
     } catch (error) {
-        console.error("Error generating report:", error);
+      console.error("Error generating report:", error);
     }
-};
-</script>
+  };
+  
+  // Initialize
+  project.value = computed(() =>
+    projectStore.projects.find((p) => p.id === route.params.id)
+  ).value;
+  </script>
+  
+  

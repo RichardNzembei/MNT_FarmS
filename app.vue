@@ -27,7 +27,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="bg-white dark:bg-white min-h-screen">
+  <div class="bg-gray-200 dark:bg-gray-200 min-h-screen">
     <NuxtPage />
   </div>
 </template>
