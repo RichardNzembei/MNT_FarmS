@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4">
+  <div class="p-4 bg-gray-200 dark:bg-gray-200 min-h-screen">
     <!-- Improved back button with better touch target -->
     <NuxtLink
       to="/"

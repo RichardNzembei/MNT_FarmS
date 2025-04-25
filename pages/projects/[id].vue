@@ -1,5 +1,5 @@
 <template>
-    <div class=" p-4 sm:p-6 font-inter antialiased text-stone-800">
+    <div class=" p-4 sm:p-6 font-inter antialiased text-stone-800 bg-gray-200 dark:bg-gray-200 min-h-screen">
       <!-- Back Button -->
       <NuxtLink
         to="/existingproject"
