@@ -1,77 +1,77 @@
 <template>
-    <div
-        class="flex justify-between items-center mb-16 p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl shadow-sm">
-
-        <div class="space-y-1">
-            <h1 class="text-2xl font-bold text-green-900 animate-fade-in">Reuben's Farms</h1>
-            <p class="text-sm text-red-500 font-medium animate-fade-in delay-100">One Blood, One Piece!</p>
+    <header class="app-header">
+      <div class="header-content">
+        <div class="branding">
+          <h1 class="app-title">Reuben's Farms</h1>
+          <p class="app-tagline">One Blood, One Piece!</p>
         </div>
-
-
-        <div class="flex items-center gap-2">
-
-            <UChip :text="count" size="lg"
-                class="bg-green-600 text-white hover:bg-green-700 transition-all duration-300 animate-fade-in delay-200">
-
-                <UButton icon="i-heroicons-bell" size="xl" variant="ghost"
-                    class="text-white hover:text-green-700 animate-ring" />
-            </UChip>
+        
+        <div class="notification-badge">
+          <UButton 
+            icon="i-heroicons-bell"
+            size="xl"
+            variant="ghost"
+            color="white"
+            class="bell-icon"
+            @click="handleNotificationClick"
+          />
+          <span class="badge-count">{{ count }}</span>
         </div>
-    </div>
-</template>
-
-<script setup>
-const count = 4;
-</script>
-
-<style>
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes ring {
-    0% {
-        transform: rotate(0);
-    }
-
-    25% {
-        transform: rotate(15deg);
-    }
-
-    50% {
-        transform: rotate(-15deg);
-    }
-
-    75% {
-        transform: rotate(10deg);
-    }
-
-    100% {
-        transform: rotate(0);
-    }
-}
-
-.animate-fade-in {
-    animation: fadeIn 0.5s ease-out forwards;
-}
-
-.delay-100 {
-    animation-delay: 0.1s;
-}
-
-.delay-200 {
-    animation-delay: 0.2s;
-}
-
-.animate-ring {
-    animation: ring 1.5s ease-in-out infinite;
-}
-</style>
+      </div>
+    </header>
+  </template>
+  
+  <script setup>
+  const count = 4;
+  
+  const handleNotificationClick = () => {
+    // Add notification handling logic
+    console.log('Notifications clicked');
+  };
+  </script>
+  
+  <style scoped>
+  .app-header {
+    @apply bg-gradient-to-r from-green-600 to-green-700 rounded-xl shadow-md p-4 mb-4;
+  }
+  
+  .header-content {
+    @apply flex justify-between items-center;
+  }
+  
+  .branding {
+    @apply space-y-1;
+  }
+  
+  .app-title {
+    @apply text-2xl font-bold text-white;
+  }
+  
+  .app-tagline {
+    @apply text-sm font-medium text-green-100;
+  }
+  
+  .notification-badge {
+    @apply relative flex items-center;
+  }
+  
+  .bell-icon {
+    @apply text-white hover:text-green-200 transition-colors;
+  }
+  
+  .badge-count {
+    @apply absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold 
+           rounded-full h-5 w-5 flex items-center justify-center 
+           shadow-md animate-pulse;
+  }
+  
+  /* Animation for subtle attention */
+  @keyframes subtle-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+  
+  .animate-pulse {
+    animation: subtle-pulse 2s infinite;
+  }
+  </style>
