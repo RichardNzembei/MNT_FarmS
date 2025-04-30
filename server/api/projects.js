@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-  const {firestore} = getFirebaseAdmin();
+    const { firestore } = getFirebaseAdmin();
     if (!firestore) {
       throw createError({
         statusCode: 500,
@@ -55,10 +55,10 @@ export default defineEventHandler(async (event) => {
         landSize: body.landSize,
         sprayingTable: [],
         fertilizerTable: [],
-        laborTable:[],
-        harvestTable:[],
-        landPrepTable:[],
-        status:"",
+        laborTable: [],
+        harvestTable: [],
+        landPrepTable: [],
+        status: "",
         createdAt: new Date(),
       });
 
@@ -72,8 +72,8 @@ export default defineEventHandler(async (event) => {
   } catch (error) {
     console.error("Error handling project request:", error);
     throw createError({
-      statusCode: 500,
-      statusMessage: "Internal Server Error",
+      statusCode: error.statusCode || 500,
+      statusMessage: error.statusMessage || "Internal Server Error",
     });
   }
 });

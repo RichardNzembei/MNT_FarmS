@@ -639,11 +639,11 @@
                 <div class="grid grid-cols-2 gap-4">
                   <div class="bg-white p-4 rounded-xl shadow-sm">
                     <p class="text-sm text-stone-600 mb-1.5">Total Revenue</p>
-                    <p class="text-xl font-bold text-emerald-600">{{ formatCurrency(calculateTotalRevenue()) }}</p>
+                    <p class="text-xl font-bold text-emerald-600">under dev</p>
                   </div>
                   <div class="bg-white p-4 rounded-xl shadow-sm">
                     <p class="text-sm text-stone-600 mb-1.5">Total Costs</p>
-                    <p class="text-xl font-bold text-red-600">{{ formatCurrency(calculateTotalCosts()) }}</p>
+                    <p class="text-xl font-bold text-red-600">under dev</p>
                   </div>
                 </div>
   
@@ -651,9 +651,8 @@
                   <p class="text-sm text-stone-600 mb-1.5">Net Profit</p>
                   <p
                     class="text-2xl font-bold"
-                    :class="calculateProfit() >= 0 ? 'text-emerald-600' : 'text-red-600'"
                   >
-                    {{ formatCurrency(calculateProfit()) }}
+                  under dev
                   </p>
                 </div>
               </div>
@@ -662,19 +661,19 @@
                 <div class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 transition-all duration-200">
                   <div class="flex justify-between text-sm">
                     <span class="font-semibold">Labor Costs</span>
-                    <span class="text-emerald-600 font-medium">{{ formatCurrency(calculateLaborCosts()) }}</span>
+                    <span class="text-emerald-600 font-medium">under dev</span>
                   </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 transition-all duration-200">
                   <div class="flex justify-between text-sm">
                     <span class="font-semibold">Land Preparation</span>
-                    <span class="text-emerald-600 font-medium">{{ formatCurrency(calculateLandPrepCosts()) }}</span>
+                    <span class="text-emerald-600 font-medium">under dev</span>
                   </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 transition-all duration-200">
                   <div class="flex justify-between text-sm">
                     <span class="font-semibold">Harvest Revenue</span>
-                    <span class="text-emerald-600 font-medium">{{ formatCurrency(calculateTotalRevenue()) }}</span>
+                    <span class="text-emerald-600 font-medium">under dev</span>
                   </div>
                 </div>
               </div>

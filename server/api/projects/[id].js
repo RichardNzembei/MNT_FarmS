@@ -1,9 +1,9 @@
-import getFirebaseAdmin from "../firebase";
+import getFirebaseAdmin from "../../firebase";
 
 export default defineEventHandler(async (event) => {
   setResponseHeaders(event, {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   });
 
@@ -20,41 +20,35 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    if (event.node.req.method === "POST") {
-      const body = await readBody(event);
-      if (!body.projectId || body.status === undefined) {
+    if (event.node.req.method === "DELETE") {
+      const projectId = event.context.params.id;
+      if (!projectId) {
         throw createError({
           statusCode: 400,
-          statusMessage: "Missing projectId or status",
+          statusMessage: "Missing projectId",
         });
       }
-      if (!['pin', 'end', ''].includes(body.status)) {
-        throw createError({
-          statusCode: 400,
-          statusMessage: "Invalid status value",
-        });
-      }
-      const projectRef = firestore.collection("projects").doc(body.projectId);
+
+      const projectRef = firestore.collection("projects").doc(projectId);
       const projectSnap = await projectRef.get();
+
       if (!projectSnap.exists) {
         throw createError({
           statusCode: 404,
           statusMessage: "Project not found",
         });
       }
-      await projectRef.update({
-        status: body.status,
-      });
-      const updatedProjectSnap = await projectRef.get();
-      const updatedProject = { id: updatedProjectSnap.id, ...updatedProjectSnap.data() };
-      return updatedProject;
+
+      await projectRef.delete();
+      return { message: "Project deleted successfully" };
     }
+
     throw createError({
       statusCode: 405,
       statusMessage: "Method Not Allowed",
     });
   } catch (error) {
-    console.error("Error updating project status:", error);
+    console.error("Error deleting project:", error);
     throw createError({
       statusCode: error.statusCode || 500,
       statusMessage: error.statusMessage || "Internal Server Error",

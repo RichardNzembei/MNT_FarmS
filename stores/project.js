@@ -12,23 +12,19 @@ export const useProjectStore = defineStore("projects", {
   actions: {
     async fetchProjects() {
       console.log("Fetching projects...");
-
       try {
         const response = await fetch(`${baseURL}/api/projects`);
         console.log("Response received:", response);
-
         const data = await response.json();
         console.log("Data parsed successfully:", data);
-
         if (response.ok) {
           console.log("Successfully fetched projects.");
-
           this.projects = data.map((project) => ({
             ...project,
             sprayingTable: project.sprayingTable || [],
             fertilizerTable: project.fertilizerTable || [],
+            isPinned: project.status === "pin",
           }));
-
           console.log("Projects stored successfully:", this.projects);
         } else {
           throw new Error(data.statusMessage || "Failed to fetch projects");
@@ -50,7 +46,6 @@ export const useProjectStore = defineStore("projects", {
             fertilizerTable: [],
           }),
         });
-
         const data = await response.json();
         if (response.ok) {
           this.projects.push({
@@ -58,6 +53,7 @@ export const useProjectStore = defineStore("projects", {
             id: data.id,
             sprayingTable: [],
             fertilizerTable: [],
+            isPinned: false,
           });
           return data.id;
         } else {
@@ -66,6 +62,59 @@ export const useProjectStore = defineStore("projects", {
       } catch (error) {
         console.error("Error adding project:", error);
         alert("Error adding project: " + error.message);
+        throw error;
+      }
+    },
+
+    async deleteProject(projectId) {
+      try {
+        const response = await fetch(`${baseURL}/api/projects/${projectId}`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        });
+        if (response.ok) {
+          this.projects = this.projects.filter((project) => project.id !== projectId);
+        } else {
+          const data = await response.json();
+          throw new Error(data.statusMessage || "Failed to delete project");
+        }
+      } catch (error) {
+        console.error("Error deleting project:", error);
+        alert("Error deleting project: " + error.message);
+        throw error;
+      }
+    },
+
+    async togglePinProject(projectId) {
+      try {
+        const project = this.projects.find((p) => p.id === projectId);
+        if (!project) throw new Error("Project not found");
+        const newStatus = project.isPinned ? "" : "pin";
+        await this.updateProjectStatus(projectId, newStatus);
+      } catch (error) {
+        console.error("Error toggling pin status:", error);
+        alert("Error toggling pin status: " + error.message);
+        throw error;
+      }
+    },
+
+    async updateProjectStatus(projectId, status) {
+      try {
+        const response = await fetch(`${baseURL}/api/updateStatus`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectId, status }),
+        });
+        if (!response.ok) {
+          throw new Error("Failed to update project status");
+        }
+        const index = this.projects.findIndex((p) => p.id === projectId);
+        if (index !== -1) {
+          this.projects[index].status = status;
+          this.projects[index].isPinned = status === "pin";
+        }
+      } catch (error) {
+        console.error("Error updating project status:", error);
         throw error;
       }
     },
@@ -250,26 +299,6 @@ export const useProjectStore = defineStore("projects", {
       }
     },
 
-    async updateProjectStatus(projectId, status) {
-      try {
-        const response = await fetch("/api/updateStatus", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ projectId, status }),
-        });
-        if (!response.ok) {
-          throw new Error("Failed to update project status");
-        }
-        // Optionally, you can use the updated project data returned from the backend:
-        // const updatedProject = await response.json();
-        const index = this.projects.findIndex((p) => p.id === projectId);
-        if (index !== -1) {
-          // Update the project status locally.
-          this.projects[index].status = status;
-        }
-      } catch (error) {
-        console.error("Error updating project status:", error);
-      }
-    },
+
   },
 });

@@ -33,7 +33,7 @@
       <UIcon name="i-heroicons-folder-open" class="w-12 h-12 text-gray-400 mb-4" />
       <p class="text-gray-500 mb-4">No projects available yet</p>
       <NuxtLink
-        to="/projects/create"
+        to="/addproject"
         class="px-6 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-all"
       >
         Create New Project
@@ -65,7 +65,7 @@
       >
         <!-- Pinned indicator -->
         <div v-if="project.isPinned" class="absolute top-2 left-2">
-          <UIcon name="i-heroicons-map-pin" class="w-5 h-5 text-blue-500" />
+          <UIcon name="i-mdi-pin" class="w-5 h-5 text-blue-500" />
         </div>
 
         <!-- Project settings dropdown with better mobile interaction -->
@@ -96,15 +96,8 @@
                 @click="togglePinProject(project.id)"
                 class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
-                <UIcon :name="project.isPinned ? 'i-heroicons-map-pin-slash' : 'i-heroicons-map-pin'" class="w-4 h-4 mr-2" />
+                <UIcon :name="project.isPinned ? 'i-heroicons-x-mark' : 'i-mdi-pin'" class="w-4 h-4 mr-2" />
                 {{ project.isPinned ? 'Unpin' : 'Pin' }}
-              </button>
-              <button
-                @click="archiveProject(project.id)"
-                class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                <UIcon name="i-heroicons-archive-box" class="w-4 h-4 mr-2" />
-                Archive
               </button>
               <button
                 @click="confirmDelete(project.id)"
@@ -145,14 +138,8 @@
             :to="`/projects/${project.id}`"
             class="flex-1 text-center px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-colors"
           >
-            View Details
+            View Project
           </NuxtLink>
-          <button
-            @click="navigateToTasks(project.id)"
-            class="flex-1 text-center px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-colors"
-          >
-            Tasks
-          </button>
         </div>
       </div>
     </div>
@@ -160,7 +147,7 @@
     <!-- Floating action button for mobile -->
     <div class="fixed bottom-6 right-6 md:hidden">
       <NuxtLink
-        to="/projects/create"
+        to="/addproject"
         class="flex items-center justify-center w-14 h-14 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 active:bg-blue-700 transition-all"
         aria-label="Create new project"
       >
@@ -241,14 +228,7 @@ const togglePinProject = async (projectId) => {
   }
 };
 
-const archiveProject = async (projectId) => {
-  try {
-    await projectStore.updateProjectStatus(projectId, 'archived');
-    closeSettings(projectId);
-  } catch (error) {
-    console.error('Error archiving project:', error);
-  }
-};
+
 
 const confirmDelete = (projectId) => {
   projectToDelete.value = projectId;
