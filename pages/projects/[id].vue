@@ -855,13 +855,15 @@ const newProgress = ref({
 
 // Navigation Views
 const views = [
-  { id: "labour", label: "Labour", icon: "i-lucide-users" },
+  
   { id: "landPrep", label: "Land Prep", icon: "i-lucide-tractor" },
-  { id: "harvest", label: "Harvest", icon: "i-lucide-leaf" },
+  { id: "labour", label: "Labour", icon: "i-lucide-users" },
   { id: "spray", label: "Spray", icon: "i-lucide-droplet" },
   { id: "fertilizer", label: "Fertilizer", icon: "i-lucide-package" },
-  { id: "TotalCost", label: "Total Costs", icon: "i-lucide-wallet" },
   { id: "progress", label: "Progress", icon: "i-lucide-bar-chart" },
+  { id: "harvest", label: "Harvest", icon: "i-lucide-leaf" },
+  { id: "TotalCost", label: "Total Costs", icon: "i-lucide-wallet" },
+ 
 ];
 
 // Methods
