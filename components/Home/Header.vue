@@ -1,88 +1,59 @@
 <template>
-  <header class="app-header">
-    <div class="header-content">
-      <div class="branding">
-        <h1 class="app-title">Reuben's Farms</h1>
-        <p class="app-tagline">One Blood, One Piece!</p>
+  <header class="bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-2xl shadow-lg px-5 py-4">
+    <div class="flex justify-between items-center">
+      <div class="min-w-0">
+        <h1 class="text-xl font-bold text-white tracking-tight truncate">{{ farmName }}</h1>
+        <p class="text-xs text-emerald-100 mt-0.5">Farm Management</p>
       </div>
-
-      <div class="notification-badge">
-        <UButton icon="i-heroicons-bell" size="xl" variant="ghost" color="white" class="bell-icon"
-          @click="handleNotificationClick" />
-        <span class="badge-count">{{ count }}</span>
-      </div>
-    </div>
-
-    <!-- Modal -->
-    <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div class="bg-white rounded-xl p-6 w-80 text-center shadow-lg">
-        <h2 class="text-lg font-bold mb-2">Notifications</h2>
-        <p class="text-gray-600">This feature is under development 🚧</p>
-        <button @click="showModal = false" class="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-          Close
+      <div class="flex items-center gap-1">
+        <button
+          @click="showModal = true"
+          class="relative p-2 rounded-full hover:bg-emerald-500 transition-colors"
+          aria-label="Notifications"
+        >
+          <UIcon name="i-heroicons-bell" class="w-6 h-6 text-white" />
+          <span class="absolute top-1 right-1 w-2 h-2 bg-red-400 rounded-full"></span>
+        </button>
+        <button
+          @click="handleLogout"
+          class="p-2 rounded-full hover:bg-emerald-500 transition-colors"
+          aria-label="Sign out"
+        >
+          <UIcon name="i-heroicons-arrow-right-on-rectangle" class="w-6 h-6 text-white" />
         </button>
       </div>
     </div>
+
+    <Teleport to="body">
+      <div v-if="showModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4" @click.self="showModal = false">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-xs text-center shadow-xl">
+          <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <UIcon name="i-heroicons-bell" class="w-6 h-6 text-emerald-600" />
+          </div>
+          <h2 class="text-base font-semibold text-stone-800 mb-1">Notifications</h2>
+          <p class="text-sm text-stone-500 mb-4">This feature is coming soon.</p>
+          <button @click="showModal = false" class="w-full py-2.5 bg-emerald-600 text-white text-sm font-medium rounded-xl hover:bg-emerald-700 transition-colors">
+            Got it
+          </button>
+        </div>
+      </div>
+    </Teleport>
   </header>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '~/stores/auth'
 
-const count = 4
 const showModal = ref(false)
+const router = useRouter()
+const authStore = useAuthStore()
 
-const handleNotificationClick = () => {
-  showModal.value = true
+const farmName = computed(() => authStore.user?.farmName || 'My Farm')
+
+const handleLogout = () => {
+  authStore.logout()
+  router.push('/auth/login')
 }
 </script>
-
-<style scoped>
-.app-header {
-  @apply bg-gradient-to-r from-green-600 to-green-700 rounded-xl shadow-md p-4 mb-4;
-}
-
-.header-content {
-  @apply flex justify-between items-center;
-}
-
-.branding {
-  @apply space-y-1;
-}
-
-.app-title {
-  @apply text-2xl font-bold text-white;
-}
-
-.app-tagline {
-  @apply text-sm font-medium text-green-100;
-}
-
-.notification-badge {
-  @apply relative flex items-center;
-}
-
-.bell-icon {
-  @apply text-white hover:text-green-200 transition-colors;
-}
-
-.badge-count {
-  @apply absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-md animate-pulse;
-}
-
-@keyframes subtle-pulse {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.8;
-  }
-}
-
-.animate-pulse {
-  animation: subtle-pulse 2s infinite;
-}
-</style>

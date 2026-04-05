@@ -1,1141 +1,926 @@
 <template>
-  <div class=" p-4 sm:p-6 font-inter antialiased text-stone-800 bg-gray-200 dark:bg-gray-200 min-h-screen">
-    <!-- Back Button -->
-    <NuxtLink to="/existingproject"
-      class="flex items-center text-emerald-700 hover:text-emerald-800 mb-6 p-3 -ml-3 rounded-full transition-all duration-300 active:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 group"
-      aria-label="Go back to projects">
-      <UIcon name="i-mdi-arrow-left"
-        class="w-7 h-7 mr-2 transition-transform duration-300 group-hover:-translate-x-1.5" />
-      <span class="text-lg font-semibold tracking-wide">Back to Projects</span>
-    </NuxtLink>
+  <div class="min-h-screen bg-stone-100 pb-8 font-sans antialiased text-stone-800">
+    <!-- Header -->
+    <div class="bg-white border-b border-stone-100 px-4 py-4 flex items-center gap-3 sticky top-0 z-10">
+      <NuxtLink to="/existingproject" class="p-2 -ml-2 rounded-xl hover:bg-stone-100 transition-colors">
+        <UIcon name="i-heroicons-arrow-left" class="w-5 h-5 text-stone-600" />
+      </NuxtLink>
+      <div class="min-w-0 flex-1">
+        <h1 class="text-base font-semibold text-stone-800 truncate">{{ project?.projectName || 'Project' }}</h1>
+        <p class="text-xs text-stone-400">{{ project?.landSize }} acres · {{ project?.duration }} months</p>
+      </div>
+      <button v-if="project" @click="generateReport" class="p-2 rounded-xl hover:bg-stone-100 transition-colors" title="Download report">
+        <UIcon name="i-heroicons-arrow-down-tray" class="w-5 h-5 text-stone-500" />
+      </button>
+    </div>
 
-    <!-- Main Content -->
-    <div class="max-w-md sm:max-w-lg mx-auto">
-      <!-- Loading/Not Found State -->
-      <div v-if="!project" class="bg-white rounded-3xl p-8 text-center shadow-md">
-        <UIcon name="i-mdi-loading" class="w-10 h-10 text-emerald-500 animate-spin mx-auto mb-4" />
-        <p class="text-stone-600 text-lg font-medium">Loading project details...</p>
+    <!-- Loading -->
+    <div v-if="!project" class="flex flex-col items-center justify-center py-24 px-4">
+      <div class="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <p class="text-sm text-stone-500">Loading project...</p>
+    </div>
+
+    <template v-else>
+      <!-- Project Info Card -->
+      <div class="mx-4 mt-4 bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 px-5 py-4">
+          <p class="text-emerald-100 text-xs mb-1">Description</p>
+          <p class="text-white text-sm leading-relaxed">{{ project.description }}</p>
+        </div>
+        <!-- Progress bar -->
+        <div class="px-5 pt-3 pb-1">
+          <div class="flex justify-between items-center mb-1.5">
+            <span class="text-xs text-stone-500 font-medium">Project Progress</span>
+            <span class="text-xs font-bold" :class="progressPercent >= 100 ? 'text-emerald-600' : 'text-stone-700'">{{ progressPercent }}%</span>
+          </div>
+          <div class="w-full bg-stone-100 rounded-full h-2">
+            <div
+              class="h-2 rounded-full transition-all duration-500"
+              :class="progressPercent >= 100 ? 'bg-emerald-500' : progressPercent >= 60 ? 'bg-amber-400' : 'bg-emerald-500'"
+              :style="{ width: progressPercent + '%' }"
+            ></div>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 divide-x divide-stone-100 text-center py-3">
+          <div class="px-3">
+            <p class="text-xs text-stone-400 mb-0.5">Start</p>
+            <p class="text-sm font-semibold text-stone-700">{{ formatDate(project.startDate) }}</p>
+          </div>
+          <div class="px-3">
+            <p class="text-xs text-stone-400 mb-0.5">Duration</p>
+            <p class="text-sm font-semibold text-stone-700">{{ project.duration }}m</p>
+          </div>
+          <div class="px-3">
+            <p class="text-xs text-stone-400 mb-0.5">Size</p>
+            <p class="text-sm font-semibold text-stone-700">{{ project.landSize }} ac</p>
+          </div>
+        </div>
       </div>
 
-      <!-- Project Content -->
-      <div v-else class="bg-white rounded-3xl shadow-md overflow-hidden relative">
-        <!-- Decorative Leaf Overlay -->
-        <div class="absolute inset-0 opacity-5 bg-leaf-pattern pointer-events-none"></div>
-
-        <!-- Project Header -->
-        <div class="p-6 border-b border-stone-100">
-          <div class="flex items-start space-x-5">
-            <div class="bg-emerald-100 p-3 rounded-xl">
-              <UIcon name="i-lucide-file" class="w-8 h-8 text-emerald-600" />
-            </div>
-            <div>
-              <h1 class="text-2xl font-playfair font-bold text-stone-900 line-clamp-2">{{ project.projectName }}</h1>
-              <p class="text-base text-stone-600 mt-2 line-clamp-3">{{ project.description }}</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Project Metadata -->
-        <div class="p-6 grid grid-cols-2 gap-5 text-base">
-          <div class="flex items-start space-x-3">
-            <UIcon name="i-lucide-calendar" class="w-6 h-6 text-emerald-500 mt-0.5 flex-shrink-0" />
-            <div>
-              <p class="text-stone-500 text-sm">Duration</p>
-              <p class="font-semibold">{{ project.duration }} months</p>
-            </div>
-          </div>
-          <div class="flex items-start space-x-3">
-            <UIcon name="i-lucide-calendar-days" class="w-6 h-6 text-emerald-500 mt-0.5 flex-shrink-0" />
-            <div>
-              <p class="text-stone-500 text-sm">Start Date</p>
-              <p class="font-semibold">{{ project.startDate }}</p>
-            </div>
-          </div>
-          <div class="flex items-start space-x-3">
-            <UIcon name="i-lucide-land-plot" class="w-6 h-6 text-emerald-500 mt-0.5 flex-shrink-0" />
-            <div>
-              <p class="text-stone-500 text-sm">Land Size</p>
-              <p class="font-semibold">{{ project.landSize }} Acres</p>
-            </div>
-          </div>
-          <div class="flex items-start space-x-3">
-            <UIcon name="i-lucide-bar-chart" class="w-6 h-6 text-emerald-500 mt-0.5 flex-shrink-0" />
-            <div>
-              <p class="text-stone-500 text-sm">Progress</p>
-              <p class="font-semibold">{{ project.progress || 0 }}%</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Records Navigation -->
-        <div class="px-6 pb-3 border-b border-stone-100">
-          <div class="relative">
-            <div class="overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-emerald-300">
-              <div class="flex space-x-3 w-max">
-                <button v-for="view in views" :key="view.id" @click="setView(view.id)"
-                  class="flex items-center px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-300 active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  :class="{
-                    'bg-emerald-100 text-emerald-700': currentView === view.id,
-                    'bg-stone-100 text-stone-700 hover:bg-stone-200': currentView !== view.id
-                  }" :aria-label="`View ${view.label} records`" role="tab" :aria-selected="currentView === view.id">
-                  <UIcon :name="view.icon" class="w-5 h-5 mr-2" />
-                  {{ view.label }}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Current View Content -->
-        <div class="p-6">
-          <!-- Labor Records -->
-          <section v-if="currentView === 'labour'" class="space-y-6">
-            <div class="flex justify-between items-center">
-              <h2 class="text-xl font-semibold flex items-center">
-                <UIcon name="i-lucide-users" class="w-6 h-6 text-emerald-600 mr-3" />
-                Labor Records
-              </h2>
-              <button @click="toggleForm('labor')"
-                class="flex items-center bg-emerald-600 text-white py-2.5 px-5 rounded-full active:bg-emerald-700 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                :aria-expanded="showLaborForm">
-                <UIcon name="i-lucide-plus" class="w-5 h-5 mr-2" />
-                {{ showLaborForm ? 'Cancel' : 'Add Record' }}
-              </button>
-            </div>
-
-            <form v-if="showLaborForm" @submit.prevent="saveLaborRecord"
-              class="bg-emerald-50 p-5 rounded-2xl space-y-5 animation-fade-slide">
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Date</label>
-                <input v-model="newLabor.date" type="date" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Workers</label>
-                  <input v-model.number="newLabor.numberOfWorkers" type="number" placeholder="0" required
-                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Hours</label>
-                  <input v-model.number="newLabor.hoursWorked" type="number" placeholder="0" required
-                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Task</label>
-                <input v-model="newLabor.taskPerformed" placeholder="Task performed" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Wage Rate</label>
-                  <input v-model.number="newLabor.wageRate" type="number" placeholder="Ksh" required
-                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-stone-700 mb-1.5">Area</label>
-                  <input v-model.number="newLabor.cropArea" type="number" placeholder="Acres" required
-                    class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-                </div>
-              </div>
-
-              <button type="submit"
-                class="w-full bg-emerald-600 text-white py-3 px-5 rounded-full active:bg-emerald-700 text-base font-semibold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                :disabled="savingLabor">
-                <UIcon v-if="savingLabor" name="i-mdi-loading" class="w-5 h-5 mr-2 animate-spin" />
-                {{ savingLabor ? 'Saving...' : 'Save Record' }}
-              </button>
-            </form>
-
-            <div class="space-y-4">
-              <div v-for="record in project.laborTable" :key="record.id"
-                class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 active:bg-emerald-100 transition-all duration-200">
-                <div class="grid grid-cols-2 gap-3 text-sm">
-                  <div><span class="font-semibold">Date:</span> {{ record.date }}</div>
-                  <div><span class="font-semibold">Workers:</span> {{ record.numberOfWorkers }}</div>
-                  <div><span class="font-semibold">Task:</span> {{ record.taskPerformed }}</div>
-                  <div><span class="font-semibold">Hours:</span> {{ record.hoursWorked }}</div>
-                  <div><span class="font-semibold">Wage:</span> {{ record.wageRate }}</div>
-                  <div><span class="font-semibold">Area:</span> {{ record.cropArea }}</div>
-                  <div class="col-span-2">
-                    <span class="font-semibold">Total:</span>
-                    <span class="text-emerald-600 font-medium">{{ record.numberOfWorkers * record.wageRate }}</span>
-                  </div>
-                </div>
-              </div>
-              <div v-if="!project.laborTable.length" class="p-6 text-center text-stone-500 text-base">
-                No labor records found
-              </div>
-            </div>
-          </section>
-
-          <!-- Land Prep Records -->
-          <section v-if="currentView === 'landPrep'" class="space-y-6">
-            <div class="flex justify-between items-center">
-              <h2 class="text-xl font-semibold flex items-center">
-                <UIcon name="i-lucide-shovel" class="w-6 h-6 text-emerald-600 mr-3" />
-                Land Prep Records
-              </h2>
-              <button @click="toggleForm('landPrep')"
-                class="flex items-center bg-emerald-600 text-white py-2.5 px-5 rounded-full active:bg-emerald-700 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                :aria-expanded="showLandPrepForm">
-                <UIcon name="i-lucide-plus" class="w-5 h-5 mr-2" />
-                {{ showLandPrepForm ? 'Cancel' : 'Add Record' }}
-              </button>
-            </div>
-
-            <form v-if="showLandPrepForm" @submit.prevent="saveLandPrepRecord"
-              class="bg-emerald-50 p-5 rounded-2xl space-y-5 animation-fade-slide">
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Date</label>
-                <input v-model="newLandPrep.date" type="date" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Labor</label>
-                <input v-model="newLandPrep.landPrepLabor" placeholder="Land Prep Labor" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Description</label>
-                <input v-model="newLandPrep.prepDescription" placeholder="Description" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Price</label>
-                <input v-model.number="newLandPrep.prepPrice" type="number" placeholder="Labor Price" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <button type="submit"
-                class="w-full bg-emerald-600 text-white py-3 px-5 rounded-full active:bg-emerald-700 text-base font-semibold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                :disabled="savingLandPrep">
-                <UIcon v-if="savingLandPrep" name="i-mdi-loading" class="w-5 h-5 mr-2 animate-spin" />
-                {{ savingLandPrep ? 'Saving...' : 'Save Record' }}
-              </button>
-            </form>
-
-            <div class="space-y-4">
-              <div v-for="record in project.landPrepTable" :key="record.id"
-                class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 active:bg-emerald-100 transition-all duration-200">
-                <div class="grid grid-cols-2 gap-3 text-sm">
-                  <div><span class="font-semibold">Date:</span> {{ formatDate(record.date) }}</div>
-                  <div><span class="font-semibold">Labor:</span> {{ record.landPrepLabor }}</div>
-                  <div class="col-span-2"><span class="font-semibold">Description:</span> {{ record.prepDescription }}
-                  </div>
-                  <div class="col-span-2">
-                    <span class="font-semibold">Total:</span>
-                    <span class="text-emerald-600 font-medium">{{ formatCurrency(record.prepPrice) }}</span>
-                  </div>
-                </div>
-              </div>
-              <div v-if="!project.landPrepTable.length" class="p-6 text-center text-stone-500 text-base">
-                No land prep records found
-              </div>
-            </div>
-          </section>
-
-          <!-- Harvest Records -->
-          <section v-if="currentView === 'harvest'" class="space-y-6">
-            <div class="flex justify-between items-center">
-              <h2 class="text-xl font-semibold flex items-center">
-                <UIcon name="i-lucide-leaf" class="w-6 h-6 text-emerald-600 mr-3" />
-                Harvest Records
-              </h2>
-              <button @click="toggleForm('harvest')"
-                class="flex items-center bg-emerald-600 text-white py-2.5 px-5 rounded-full active:bg-emerald-700 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                :aria-expanded="showHarvestForm">
-                <UIcon name="i-lucide-plus" class="w-5 h-5 mr-2" />
-                {{ showHarvestForm ? 'Cancel' : 'Add Record' }}
-              </button>
-            </div>
-
-            <form v-if="showHarvestForm" @submit.prevent="saveHarvestRecord"
-              class="bg-emerald-50 p-5 rounded-2xl space-y-5 animation-fade-slide">
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Date</label>
-                <input v-model="newHarvest.date" type="date" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Quantity</label>
-                <input v-model.number="newHarvest.quantity" type="number" placeholder="Quantity (kgs/cartons)" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Quality</label>
-                <input v-model="newHarvest.quality" placeholder="Local/Export" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Price/Unit</label>
-                <input v-model.number="newHarvest.pricePerUnit" type="number" placeholder="Price per Unit" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <button type="submit"
-                class="w-full bg-emerald-600 text-white py-3 px-5 rounded-full active:bg-emerald-700 text-base font-semibold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                :disabled="savingHarvest">
-                <UIcon v-if="savingHarvest" name="i-mdi-loading" class="w-5 h-5 mr-2 animate-spin" />
-                {{ savingHarvest ? 'Saving...' : 'Save Record' }}
-              </button>
-            </form>
-
-            <div class="space-y-4">
-              <div v-for="record in project.harvestTable" :key="record.id"
-                class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 active:bg-emerald-100 transition-all duration-200">
-                <div class="grid grid-cols-2 gap-3 text-sm">
-                  <div><span class="font-semibold">Date:</span> {{ formatDate(record.date) }}</div>
-                  <div><span class="font-semibold">Quantity:</span> {{ record.quantity }}</div>
-                  <div><span class="font-semibold">Quality:</span> {{ record.quality }}</div>
-                  <div><span class="font-semibold">Price:</span> {{ record.pricePerUnit }}</div>
-                  <div class="col-span-2">
-                    <span class="font-semibold">Total:</span>
-                    <span class="text-emerald-600 font-medium">{{ formatCurrency(record.quantity * record.pricePerUnit)
-                      }}</span>
-                  </div>
-                </div>
-              </div>
-              <div v-if="project.harvestTable.length === 0" class="p-6 text-center text-stone-500 text-base">
-                No harvest records found
-              </div>
-            </div>
-          </section>
-
-          <!-- Spray Records -->
-          <section v-if="currentView === 'spray'" class="space-y-6">
-            <div class="flex justify-between items-center">
-              <h2 class="text-xl font-semibold flex items-center">
-                <UIcon name="i-lucide-droplet" class="w-6 h-6 text-emerald-600 mr-3" />
-                Spraying Records
-              </h2>
-              <button @click="toggleForm('spray')"
-                class="flex items-center bg-emerald-600 text-white py-2.5 px-5 rounded-full active:bg-emerald-700 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                :aria-expanded="showSprayingForm">
-                <UIcon name="i-lucide-plus" class="w-5 h-5 mr-2" />
-                {{ showSprayingForm ? 'Cancel' : 'Add Record' }}
-              </button>
-            </div>
-
-            <form v-if="showSprayingForm" @submit.prevent="saveSprayingRecord"
-              class="bg-emerald-50 p-5 rounded-2xl space-y-5 animation-fade-slide">
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Date</label>
-                <input v-model="newSpraying.date" type="date" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Serial No</label>
-                <input v-model="newSpraying.serialNo" placeholder="Serial No" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Trade Name</label>
-                <input v-model="newSpraying.tradeName" placeholder="Trade Name" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Reg No</label>
-                <input v-model="newSpraying.regNo" placeholder="Registration No"
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Ingredients</label>
-                <input v-model="newSpraying.activeIngredients" placeholder="Active Ingredients" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Manufacturer</label>
-                <input v-model="newSpraying.manufacturer" placeholder="Manufacturer" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Agent</label>
-                <input v-model="newSpraying.agent" placeholder="Agent" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Uses</label>
-                <input v-model="newSpraying.uses" placeholder="Uses" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <button type="submit"
-                class="w-full bg-emerald-600 text-white py-3 px-5 rounded-full active:bg-emerald-700 text-base font-semibold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                :disabled="savingSpraying">
-                <UIcon v-if="savingSpraying" name="i-mdi-loading" class="w-5 h-5 mr-2 animate-spin" />
-                {{ savingSpraying ? 'Saving...' : 'Save Record' }}
-              </button>
-            </form>
-
-            <div class="space-y-4">
-              <div v-for="record in project.sprayingTable" :key="record.id"
-                class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 active:bg-emerald-100 transition-all duration-200">
-                <div class="grid grid-cols-2 gap-3 text-sm">
-                  <div><span class="font-semibold">Serial:</span> {{ record.serialNo }}</div>
-                  <div><span class="font-semibold">Trade:</span> {{ record.tradeName }}</div>
-                  <div><span class="font-semibold">Reg:</span> {{ record.regNo }}</div>
-                  <div><span class="font-semibold">Ingredients:</span> {{ record.activeIngredients }}</div>
-                  <div><span class="font-semibold">Manufacturer:</span> {{ record.manufacturer }}</div>
-                  <div><span class="font-semibold">Agent:</span> {{ record.agent }}</div>
-                  <div><span class="font-semibold">Uses:</span> {{ record.uses }}</div>
-                  <div><span class="font-semibold">Date:</span> {{ formatDate(record.date) }}</div>
-                </div>
-              </div>
-              <div v-if="!project.sprayingTable.length" class="p-6 text-center text-stone-500 text-base">
-                No spraying records found
-              </div>
-            </div>
-          </section>
-
-          <!-- Fertilizer Records -->
-          <section v-if="currentView === 'fertilizer'" class="space-y-6">
-            <div class="flex justify-between items-center">
-              <h2 class="text-xl font-semibold flex items-center">
-                <UIcon name="i-lucide-package" class="w-6 h-6 text-emerald-600 mr-3" />
-                Fertilizer Records
-              </h2>
-              <button @click="toggleForm('fertilizer')"
-                class="flex items-center bg-emerald-600 text-white py-2.5 px-5 rounded-full active:bg-emerald-700 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                :aria-expanded="showFertilizerForm">
-                <UIcon name="i-lucide-plus" class="w-5 h-5 mr-2" />
-                {{ showFertilizerForm ? 'Cancel' : 'Add Record' }}
-              </button>
-            </div>
-
-            <form v-if="showFertilizerForm" @submit.prevent="saveFertilizerRecord"
-              class="bg-emerald-50 p-5 rounded-2xl space-y-5 animation-fade-slide">
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Date</label>
-                <input v-model="newFertilizer.date" type="date" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Stage</label>
-                <input v-model="newFertilizer.stage" placeholder="Stage" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Type</label>
-                <input v-model="newFertilizer.type" placeholder="Type" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Name</label>
-                <input v-model="newFertilizer.name" placeholder="Name"
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Purpose</label>
-                <input v-model="newFertilizer.purpose" placeholder="Purpose" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <button type="submit"
-                class="w-full bg-emerald-600 text-white py-3 px-5 rounded-full active:bg-emerald-700 text-base font-semibold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                :disabled="savingFertilizer">
-                <UIcon v-if="savingFertilizer" name="i-mdi-loading" class="w-5 h-5 mr-2 animate-spin" />
-                {{ savingFertilizer ? 'Saving...' : 'Save Record' }}
-              </button>
-            </form>
-
-            <div class="space-y-4">
-              <div v-for="record in project.fertilizerTable" :key="record.id"
-                class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 active:bg-emerald-100 transition-all duration-200">
-                <div class="grid grid-cols-2 gap-3 text-sm">
-                  <div><span class="font-semibold">Stage:</span> {{ record.stage }}</div>
-                  <div><span class="font-semibold">Type:</span> {{ record.type }}</div>
-                  <div><span class="font-semibold">Name:</span> {{ record.name }}</div>
-                  <div><span class="font-semibold">Purpose:</span> {{ record.purpose }}</div>
-                  <div><span class="font-semibold">Date:</span> {{ formatDate(record.date) }}</div>
-                </div>
-              </div>
-              <div v-if="!project.fertilizerTable.length" class="p-6 text-center text-stone-500 text-base">
-                No fertilizer records found
-              </div>
-            </div>
-          </section>
-
-          <!-- Total Costs Section -->
-          <section v-if="currentView === 'TotalCost'" class="space-y-6">
-            <h2 class="text-xl font-semibold flex items-center">
-              <UIcon name="i-lucide-wallet" class="w-6 h-6 text-emerald-600 mr-3" />
-              Financial Summary
-            </h2>
-
-            <div class="bg-emerald-50 rounded-2xl p-5 space-y-5">
-              <div class="grid grid-cols-2 gap-4">
-                <div class="bg-white p-4 rounded-xl shadow-sm">
-                  <p class="text-sm text-stone-600 mb-1.5">Total Revenue</p>
-                  <p class="text-xl font-bold text-emerald-600">under dev</p>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm">
-                  <p class="text-sm text-stone-600 mb-1.5">Total Costs</p>
-                  <p class="text-xl font-bold text-red-600">under dev</p>
-                </div>
-              </div>
-
-              <div class="bg-white p-5 rounded-xl">
-                <p class="text-sm text-stone-600 mb-1.5">Net Profit</p>
-                <p class="text-2xl font-bold">
-                  under dev
-                </p>
-              </div>
-            </div>
-
-            <div class="space-y-4">
-              <div
-                class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 transition-all duration-200">
-                <div class="flex justify-between text-sm">
-                  <span class="font-semibold">Labor Costs</span>
-                  <span class="text-emerald-600 font-medium">under dev</span>
-                </div>
-              </div>
-              <div
-                class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 transition-all duration-200">
-                <div class="flex justify-between text-sm">
-                  <span class="font-semibold">Land Preparation</span>
-                  <span class="text-emerald-600 font-medium">under dev</span>
-                </div>
-              </div>
-              <div
-                class="bg-white p-4 rounded-xl border border-stone-200 hover:bg-emerald-50 transition-all duration-200">
-                <div class="flex justify-between text-sm">
-                  <span class="font-semibold">Harvest Revenue</span>
-                  <span class="text-emerald-600 font-medium">under dev</span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Progress Records -->
-          <section v-if="currentView === 'progress'" class="space-y-6">
-            <div class="flex justify-between items-center">
-              <h2 class="text-xl font-semibold flex items-center">
-                <UIcon name="i-lucide-bar-chart-2" class="w-6 h-6 text-emerald-600 mr-3" />
-                Project Progress
-              </h2>
-              <button @click="toggleForm('progress')"
-                class="flex items-center bg-emerald-600 text-white py-2.5 px-5 rounded-full active:bg-emerald-700 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                :aria-expanded="showProgressForm">
-                <UIcon name="i-lucide-plus" class="w-5 h-5 mr-2" />
-                {{ showProgressForm ? 'Cancel' : 'Add Record' }}
-              </button>
-            </div>
-
-            <form v-if="showProgressForm" @submit.prevent="saveProgressRecord"
-              class="bg-emerald-50 p-5 rounded-2xl space-y-5 animation-fade-slide">
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Date</label>
-                <input v-model="newProgress.date" type="date" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Stage</label>
-                <input v-model="newProgress.stage" placeholder="Current stage" required
-                  class="w-full p-3 text-sm border border-stone-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-stone-700 mb-1.5">Upload Image</label>
-                <div class="mt-1.5 flex items-center">
-                  <label class="cursor-pointer">
-                    <div
-                      class="flex items-center justify-center px-5 py-3 border border-stone-300 rounded-lg bg-white text-sm font-semibold text-stone-700 active:bg-stone-50">
-                      <UIcon name="i-lucide-upload" class="w-5 h-5 mr-2" />
-                      Choose File
-                    </div>
-                    <input type="file" @change="handleImageUpload" accept="image/*" class="sr-only" />
-                  </label>
-                  <span v-if="imageFile" class="ml-4 text-sm text-stone-600 truncate">{{ imageFile.name }}</span>
-                </div>
-                <img v-if="imagePreview" :src="imagePreview" alt="Preview"
-                  class="mt-3 w-full h-auto max-h-56 object-contain rounded-xl border border-stone-200" />
-              </div>
-              <button type="submit"
-                class="w-full bg-emerald-600 text-white py-3 px-5 rounded-full active:bg-emerald-700 text-base font-semibold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                :disabled="savingProgress">
-                <UIcon v-if="savingProgress" name="i-mdi-loading" class="w-5 h-5 mr-2 animate-spin" />
-                {{ savingProgress ? 'Saving...' : 'Save Progress' }}
-              </button>
-            </form>
-
-            <div class="space-y-4">
-              <div v-for="record in project.progressTable" :key="record.id"
-                class="bg-white rounded-xl overflow-hidden shadow-sm border border-stone-200 active:scale-[0.98] transition-transform duration-300">
-                <div class="relative aspect-video">
-                  <img :src="record.imageUrl" :alt="`Progress photo for ${record.stage}`"
-                    class="w-full h-full object-cover" loading="lazy" />
-                  <div
-                    class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-5 flex flex-col justify-end">
-                    <p class="text-white font-semibold text-lg">{{ record.stage }}</p>
-                    <p class="text-white text-sm">{{ record.date }}</p>
-                  </div>
-                </div>
-              </div>
-              <div v-if="!project.progressTable.length" class="text-center py-8 text-stone-500">
-                <UIcon name="i-lucide-camera-off" class="w-10 h-10 mx-auto mb-3 text-stone-300" />
-                <p class="text-base">No progress records yet</p>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        <!-- Report Generation -->
-        <div class="p-6 border-t border-stone-100 bg-stone-50">
-          <button @click="generateReport"
-            class="w-full flex items-center justify-center bg-emerald-600 text-white py-3 px-5 rounded-full active:bg-emerald-700 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            <UIcon name="i-lucide-download" class="w-6 h-6 mr-2" />
-            Download Full Report
+      <!-- Tab Bar -->
+      <div class="mx-4 mt-4">
+        <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <button
+            v-for="view in views"
+            :key="view.id"
+            @click="currentView = view.id"
+            class="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium transition-all duration-150"
+            :class="currentView === view.id
+              ? 'bg-emerald-600 text-white shadow-sm'
+              : 'bg-white text-stone-600 hover:bg-stone-50'"
+          >
+            <UIcon :name="view.icon" class="w-3.5 h-3.5" />
+            {{ view.label }}
           </button>
         </div>
       </div>
-    </div>
+
+      <!-- Tab Content -->
+      <div class="mx-4 mt-3">
+
+        <!-- ══ LABOUR ══ -->
+        <section v-if="currentView === 'labour'">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold text-stone-700 flex items-center gap-2">
+              <UIcon name="i-heroicons-users" class="w-4 h-4 text-emerald-600" /> Labor Records
+            </h2>
+            <button @click="toggleForm('labor')" class="text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-medium flex items-center gap-1 hover:bg-emerald-700 transition-colors">
+              <UIcon :name="showLaborForm ? 'i-heroicons-x-mark' : 'i-heroicons-plus'" class="w-3.5 h-3.5" />
+              {{ showLaborForm ? 'Cancel' : 'Add' }}
+            </button>
+          </div>
+
+          <form v-if="showLaborForm" @submit.prevent="saveLaborRecord" class="bg-white rounded-2xl p-4 shadow-sm mb-3 space-y-3 animate-form-in">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="field-label">Date</label>
+                <input v-model="newLabor.date" type="date" required class="field-input" />
+              </div>
+              <div>
+                <label class="field-label">Workers</label>
+                <input v-model.number="newLabor.numberOfWorkers" type="number" placeholder="0" required class="field-input" />
+              </div>
+            </div>
+            <div>
+              <label class="field-label">Task Performed</label>
+              <input v-model="newLabor.taskPerformed" placeholder="What was done" required class="field-input" />
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="field-label">Hours</label>
+                <input v-model.number="newLabor.hoursWorked" type="number" placeholder="0" required class="field-input" />
+              </div>
+              <div>
+                <label class="field-label">Wage (Ksh)</label>
+                <input v-model.number="newLabor.wageRate" type="number" placeholder="0" required class="field-input" />
+              </div>
+              <div>
+                <label class="field-label">Area (ac)</label>
+                <input v-model.number="newLabor.cropArea" type="number" placeholder="0" required class="field-input" />
+              </div>
+            </div>
+            <button type="submit" :disabled="savingLabor" class="submit-btn">
+              <UIcon v-if="savingLabor" name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
+              {{ savingLabor ? 'Saving...' : 'Save Record' }}
+            </button>
+          </form>
+
+          <div class="space-y-2">
+            <div v-for="r in project.laborTable" :key="r.id" class="record-card">
+              <div class="flex justify-between items-start mb-2">
+                <span class="text-xs font-semibold text-stone-500">{{ formatDate(r.date) }}</span>
+                <span class="text-xs font-bold text-emerald-600">Ksh {{ formatNum(r.numberOfWorkers * r.wageRate) }}</span>
+              </div>
+              <p class="text-sm font-medium text-stone-800 mb-1">{{ r.taskPerformed }}</p>
+              <div class="flex gap-3 text-xs text-stone-500">
+                <span>{{ r.numberOfWorkers }} workers</span>
+                <span>{{ r.hoursWorked }} hrs</span>
+                <span>{{ r.cropArea }} ac</span>
+              </div>
+            </div>
+            <div v-if="!project.laborTable.length" class="empty-state">No labor records yet</div>
+          </div>
+        </section>
+
+        <!-- ══ LAND PREP ══ -->
+        <section v-if="currentView === 'landPrep'">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold text-stone-700 flex items-center gap-2">
+              <UIcon name="i-heroicons-wrench-screwdriver" class="w-4 h-4 text-emerald-600" /> Land Prep
+            </h2>
+            <button @click="toggleForm('landPrep')" class="text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-medium flex items-center gap-1 hover:bg-emerald-700 transition-colors">
+              <UIcon :name="showLandPrepForm ? 'i-heroicons-x-mark' : 'i-heroicons-plus'" class="w-3.5 h-3.5" />
+              {{ showLandPrepForm ? 'Cancel' : 'Add' }}
+            </button>
+          </div>
+
+          <form v-if="showLandPrepForm" @submit.prevent="saveLandPrepRecord" class="bg-white rounded-2xl p-4 shadow-sm mb-3 space-y-3 animate-form-in">
+            <div>
+              <label class="field-label">Date</label>
+              <input v-model="newLandPrep.date" type="date" required class="field-input" />
+            </div>
+            <div>
+              <label class="field-label">Labor Description</label>
+              <input v-model="newLandPrep.landPrepLabor" placeholder="Type of labor" required class="field-input" />
+            </div>
+            <div>
+              <label class="field-label">Description</label>
+              <input v-model="newLandPrep.prepDescription" placeholder="Work done" required class="field-input" />
+            </div>
+            <div>
+              <label class="field-label">Cost (Ksh)</label>
+              <input v-model.number="newLandPrep.prepPrice" type="number" placeholder="0" required class="field-input" />
+            </div>
+            <button type="submit" :disabled="savingLandPrep" class="submit-btn">
+              <UIcon v-if="savingLandPrep" name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
+              {{ savingLandPrep ? 'Saving...' : 'Save Record' }}
+            </button>
+          </form>
+
+          <div class="space-y-2">
+            <div v-for="r in project.landPrepTable" :key="r.id" class="record-card">
+              <div class="flex justify-between items-start mb-1">
+                <span class="text-xs font-semibold text-stone-500">{{ formatDate(r.date) }}</span>
+                <span class="text-xs font-bold text-emerald-600">Ksh {{ formatNum(r.prepPrice) }}</span>
+              </div>
+              <p class="text-sm font-medium text-stone-800">{{ r.landPrepLabor }}</p>
+              <p class="text-xs text-stone-500 mt-0.5">{{ r.prepDescription }}</p>
+            </div>
+            <div v-if="!project.landPrepTable.length" class="empty-state">No land prep records yet</div>
+          </div>
+        </section>
+
+        <!-- ══ HARVEST ══ -->
+        <section v-if="currentView === 'harvest'">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold text-stone-700 flex items-center gap-2">
+              <UIcon name="i-heroicons-archive-box" class="w-4 h-4 text-emerald-600" /> Harvest
+            </h2>
+            <button @click="toggleForm('harvest')" class="text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-medium flex items-center gap-1 hover:bg-emerald-700 transition-colors">
+              <UIcon :name="showHarvestForm ? 'i-heroicons-x-mark' : 'i-heroicons-plus'" class="w-3.5 h-3.5" />
+              {{ showHarvestForm ? 'Cancel' : 'Add' }}
+            </button>
+          </div>
+
+          <form v-if="showHarvestForm" @submit.prevent="saveHarvestRecord" class="bg-white rounded-2xl p-4 shadow-sm mb-3 space-y-3 animate-form-in">
+            <div>
+              <label class="field-label">Date</label>
+              <input v-model="newHarvest.date" type="date" required class="field-input" />
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="field-label">Quantity</label>
+                <input v-model.number="newHarvest.quantity" type="number" placeholder="kgs / cartons" required class="field-input" />
+              </div>
+              <div>
+                <label class="field-label">Price / Unit (Ksh)</label>
+                <input v-model.number="newHarvest.pricePerUnit" type="number" placeholder="0" required class="field-input" />
+              </div>
+            </div>
+            <div>
+              <label class="field-label">Quality</label>
+              <select v-model="newHarvest.quality" required class="field-input">
+                <option value="">Select grade</option>
+                <option value="Export">Export</option>
+                <option value="Local">Local</option>
+              </select>
+            </div>
+            <button type="submit" :disabled="savingHarvest" class="submit-btn">
+              <UIcon v-if="savingHarvest" name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
+              {{ savingHarvest ? 'Saving...' : 'Save Record' }}
+            </button>
+          </form>
+
+          <div class="space-y-2">
+            <div v-for="r in project.harvestTable" :key="r.id" class="record-card">
+              <div class="flex justify-between items-start mb-1">
+                <span class="text-xs font-semibold text-stone-500">{{ formatDate(r.date) }}</span>
+                <span class="text-xs font-bold text-emerald-600">Ksh {{ formatNum(r.quantity * r.pricePerUnit) }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <p class="text-sm font-medium text-stone-800">{{ r.quantity }} units</p>
+                <span class="text-xs px-2 py-0.5 rounded-full font-medium" :class="r.quality === 'Export' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'">{{ r.quality }}</span>
+              </div>
+              <p class="text-xs text-stone-500 mt-0.5">Ksh {{ formatNum(r.pricePerUnit) }} / unit</p>
+            </div>
+            <div v-if="!project.harvestTable.length" class="empty-state">No harvest records yet</div>
+          </div>
+        </section>
+
+        <!-- ══ SPRAY ══ -->
+        <section v-if="currentView === 'spray'">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold text-stone-700 flex items-center gap-2">
+              <UIcon name="i-heroicons-beaker" class="w-4 h-4 text-emerald-600" /> Spraying
+            </h2>
+            <button @click="toggleForm('spray')" class="text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-medium flex items-center gap-1 hover:bg-emerald-700 transition-colors">
+              <UIcon :name="showSprayingForm ? 'i-heroicons-x-mark' : 'i-heroicons-plus'" class="w-3.5 h-3.5" />
+              {{ showSprayingForm ? 'Cancel' : 'Add' }}
+            </button>
+          </div>
+
+          <form v-if="showSprayingForm" @submit.prevent="saveSprayingRecord" class="bg-white rounded-2xl p-4 shadow-sm mb-3 space-y-3 animate-form-in">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="field-label">Date</label>
+                <input v-model="newSpraying.date" type="date" required class="field-input" />
+              </div>
+              <div>
+                <label class="field-label">Serial No</label>
+                <input v-model="newSpraying.serialNo" placeholder="SN-001" required class="field-input" />
+              </div>
+            </div>
+            <div>
+              <label class="field-label">Trade Name</label>
+              <input v-model="newSpraying.tradeName" placeholder="Product trade name" required class="field-input" />
+            </div>
+            <div>
+              <label class="field-label">Reg No</label>
+              <input v-model="newSpraying.regNo" placeholder="Registration number" class="field-input" />
+            </div>
+            <div>
+              <label class="field-label">Active Ingredients</label>
+              <input v-model="newSpraying.activeIngredients" placeholder="e.g. Glyphosate 36%" required class="field-input" />
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="field-label">Manufacturer</label>
+                <input v-model="newSpraying.manufacturer" placeholder="Company" required class="field-input" />
+              </div>
+              <div>
+                <label class="field-label">Agent</label>
+                <input v-model="newSpraying.agent" placeholder="Local agent" required class="field-input" />
+              </div>
+            </div>
+            <div>
+              <label class="field-label">Uses / Purpose</label>
+              <input v-model="newSpraying.uses" placeholder="What it treats" required class="field-input" />
+            </div>
+            <button type="submit" :disabled="savingSpraying" class="submit-btn">
+              <UIcon v-if="savingSpraying" name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
+              {{ savingSpraying ? 'Saving...' : 'Save Record' }}
+            </button>
+          </form>
+
+          <div class="space-y-2">
+            <div v-for="r in project.sprayingTable" :key="r.id" class="record-card">
+              <div class="flex justify-between items-start mb-1">
+                <span class="text-sm font-semibold text-stone-800">{{ r.tradeName }}</span>
+                <span class="text-xs text-stone-400">{{ formatDate(r.date) }}</span>
+              </div>
+              <p class="text-xs text-stone-500 mb-1">{{ r.activeIngredients }}</p>
+              <div class="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-stone-400">
+                <span>{{ r.manufacturer }}</span>
+                <span>{{ r.agent }}</span>
+                <span>{{ r.uses }}</span>
+              </div>
+            </div>
+            <div v-if="!project.sprayingTable.length" class="empty-state">No spraying records yet</div>
+          </div>
+        </section>
+
+        <!-- ══ FERTILIZER ══ -->
+        <section v-if="currentView === 'fertilizer'">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold text-stone-700 flex items-center gap-2">
+              <UIcon name="i-heroicons-cube" class="w-4 h-4 text-emerald-600" /> Fertilizer
+            </h2>
+            <button @click="toggleForm('fertilizer')" class="text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-medium flex items-center gap-1 hover:bg-emerald-700 transition-colors">
+              <UIcon :name="showFertilizerForm ? 'i-heroicons-x-mark' : 'i-heroicons-plus'" class="w-3.5 h-3.5" />
+              {{ showFertilizerForm ? 'Cancel' : 'Add' }}
+            </button>
+          </div>
+
+          <form v-if="showFertilizerForm" @submit.prevent="saveFertilizerRecord" class="bg-white rounded-2xl p-4 shadow-sm mb-3 space-y-3 animate-form-in">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="field-label">Date</label>
+                <input v-model="newFertilizer.date" type="date" required class="field-input" />
+              </div>
+              <div>
+                <label class="field-label">Stage</label>
+                <input v-model="newFertilizer.stage" placeholder="e.g. Flowering" required class="field-input" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="field-label">Type</label>
+                <input v-model="newFertilizer.type" placeholder="e.g. NPK, DAP" required class="field-input" />
+              </div>
+              <div>
+                <label class="field-label">Name</label>
+                <input v-model="newFertilizer.name" placeholder="Brand name" class="field-input" />
+              </div>
+            </div>
+            <div>
+              <label class="field-label">Purpose</label>
+              <input v-model="newFertilizer.purpose" placeholder="Why it was applied" required class="field-input" />
+            </div>
+            <button type="submit" :disabled="savingFertilizer" class="submit-btn">
+              <UIcon v-if="savingFertilizer" name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
+              {{ savingFertilizer ? 'Saving...' : 'Save Record' }}
+            </button>
+          </form>
+
+          <div class="space-y-2">
+            <div v-for="r in project.fertilizerTable" :key="r.id" class="record-card">
+              <div class="flex justify-between items-start mb-1">
+                <span class="text-sm font-semibold text-stone-800">{{ r.type }} — {{ r.name }}</span>
+                <span class="text-xs text-stone-400">{{ formatDate(r.date) }}</span>
+              </div>
+              <p class="text-xs text-emerald-600 font-medium mb-0.5">Stage: {{ r.stage }}</p>
+              <p class="text-xs text-stone-500">{{ r.purpose }}</p>
+            </div>
+            <div v-if="!project.fertilizerTable.length" class="empty-state">No fertilizer records yet</div>
+          </div>
+        </section>
+
+        <!-- ══ PROGRESS ══ -->
+        <section v-if="currentView === 'progress'">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold text-stone-700 flex items-center gap-2">
+              <UIcon name="i-heroicons-photo" class="w-4 h-4 text-emerald-600" /> Progress
+            </h2>
+            <button @click="toggleForm('progress')" class="text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-medium flex items-center gap-1 hover:bg-emerald-700 transition-colors">
+              <UIcon :name="showProgressForm ? 'i-heroicons-x-mark' : 'i-heroicons-plus'" class="w-3.5 h-3.5" />
+              {{ showProgressForm ? 'Cancel' : 'Add' }}
+            </button>
+          </div>
+
+          <form v-if="showProgressForm" @submit.prevent="saveProgressRecord" class="bg-white rounded-2xl p-4 shadow-sm mb-3 space-y-3 animate-form-in">
+            <div>
+              <label class="field-label">Date</label>
+              <input v-model="newProgress.date" type="date" required class="field-input" />
+            </div>
+            <div>
+              <label class="field-label">Stage / Milestone</label>
+              <input v-model="newProgress.stage" placeholder="e.g. Germination complete" required class="field-input" />
+            </div>
+            <div>
+              <label class="field-label">Photo (optional)</label>
+              <label class="mt-1.5 flex items-center gap-3 cursor-pointer">
+                <div class="flex items-center gap-2 px-4 py-2.5 border border-stone-200 rounded-xl bg-white text-sm text-stone-600 hover:bg-stone-50 transition-colors">
+                  <UIcon name="i-heroicons-camera" class="w-4 h-4" />
+                  {{ imageFile ? imageFile.name : 'Choose photo' }}
+                </div>
+                <input type="file" @change="handleImageUpload" accept="image/*" class="sr-only" />
+              </label>
+              <img v-if="imagePreview" :src="imagePreview" alt="Preview" class="mt-2 w-full max-h-48 object-cover rounded-xl border border-stone-200" />
+            </div>
+            <button type="submit" :disabled="savingProgress" class="submit-btn">
+              <UIcon v-if="savingProgress" name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
+              {{ savingProgress ? 'Uploading...' : 'Save Progress' }}
+            </button>
+          </form>
+
+          <!-- Progress Stats -->
+          <div v-if="project.progressTable.length" class="bg-white rounded-2xl p-4 shadow-sm mb-3 flex items-center gap-4">
+            <div class="text-center">
+              <p class="text-2xl font-bold text-emerald-600">{{ project.progressTable.length }}</p>
+              <p class="text-xs text-stone-400">Milestones</p>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between text-xs text-stone-400 mb-1">
+                <span>{{ formatDate(project.startDate) }}</span>
+                <span>{{ progressPercent }}% elapsed</span>
+              </div>
+              <div class="w-full bg-stone-100 rounded-full h-2">
+                <div class="h-2 rounded-full bg-emerald-500" :style="{ width: progressPercent + '%' }"></div>
+              </div>
+              <div class="mt-1 text-xs text-stone-400">
+                Latest: {{ project.progressTable.slice().sort((a,b) => new Date(b.date)-new Date(a.date))[0]?.stage }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div v-if="project.progressTable.length" class="relative pl-6">
+            <div class="absolute left-2.5 top-0 bottom-0 w-px bg-stone-200"></div>
+            <div v-for="(r, idx) in [...project.progressTable].sort((a,b) => new Date(b.date)-new Date(a.date))" :key="r.id" class="relative mb-4">
+              <div class="absolute -left-[18px] top-1 w-4 h-4 rounded-full border-2 border-white shadow-sm flex items-center justify-center"
+                :class="idx === 0 ? 'bg-emerald-500' : 'bg-stone-300'">
+              </div>
+              <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100">
+                <div v-if="r.imageUrl" class="aspect-video relative">
+                  <img :src="r.imageUrl" :alt="r.stage" class="w-full h-full object-cover" loading="lazy" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-3">
+                    <p class="text-white text-sm font-semibold">{{ r.stage }}</p>
+                    <p class="text-white/70 text-xs">{{ formatDate(r.date) }}</p>
+                  </div>
+                </div>
+                <div v-else class="p-4 flex items-center gap-3">
+                  <div class="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <UIcon name="i-heroicons-flag" class="w-4 h-4 text-emerald-600" />
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-stone-800">{{ r.stage }}</p>
+                    <p class="text-xs text-stone-400 mt-0.5">{{ formatDate(r.date) }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="empty-state">No progress milestones yet</div>
+        </section>
+
+        <!-- ══ AUDIT ══ -->
+        <section v-if="currentView === 'audit'">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold text-stone-700 flex items-center gap-2">
+              <UIcon name="i-heroicons-clipboard-document-list" class="w-4 h-4 text-emerald-600" /> Activity Audit
+            </h2>
+            <span class="text-xs text-stone-400 bg-white px-2.5 py-1 rounded-xl border border-stone-100">{{ auditFeed.length }} records</span>
+          </div>
+
+          <!-- Summary chips -->
+          <div class="flex gap-2 flex-wrap mb-4">
+            <div class="bg-white rounded-xl px-3 py-2 shadow-sm border border-stone-100 text-center flex-1 min-w-[80px]">
+              <p class="text-base font-bold text-stone-800">{{ project.laborTable.length }}</p>
+              <p class="text-xs text-stone-400">Labour</p>
+            </div>
+            <div class="bg-white rounded-xl px-3 py-2 shadow-sm border border-stone-100 text-center flex-1 min-w-[80px]">
+              <p class="text-base font-bold text-stone-800">{{ project.harvestTable.length }}</p>
+              <p class="text-xs text-stone-400">Harvest</p>
+            </div>
+            <div class="bg-white rounded-xl px-3 py-2 shadow-sm border border-stone-100 text-center flex-1 min-w-[80px]">
+              <p class="text-base font-bold text-stone-800">{{ project.sprayingTable.length }}</p>
+              <p class="text-xs text-stone-400">Spray</p>
+            </div>
+            <div class="bg-white rounded-xl px-3 py-2 shadow-sm border border-stone-100 text-center flex-1 min-w-[80px]">
+              <p class="text-base font-bold text-stone-800">{{ project.fertilizerTable.length }}</p>
+              <p class="text-xs text-stone-400">Fertilizer</p>
+            </div>
+          </div>
+
+          <!-- Grouped by date -->
+          <div v-if="auditFeed.length" class="space-y-4">
+            <div v-for="([date, entries]) in auditFeedByDate" :key="date">
+              <p class="text-xs font-semibold text-stone-400 uppercase tracking-wide mb-2 px-1">{{ formatDate(date) }}</p>
+              <div class="space-y-2">
+                <div v-for="(entry, i) in entries" :key="i" class="bg-white rounded-xl p-3.5 shadow-sm border border-stone-100 flex items-start gap-3">
+                  <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" :class="entry.color">
+                    <UIcon :name="entry.icon" class="w-4 h-4" />
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-2 mb-0.5">
+                      <span class="text-xs font-semibold px-1.5 py-0.5 rounded-md bg-stone-100 text-stone-500">{{ entry.type }}</span>
+                    </div>
+                    <p class="text-sm font-medium text-stone-800 leading-snug">{{ entry.title }}</p>
+                    <p class="text-xs text-stone-400 mt-0.5 leading-snug">{{ entry.detail }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="empty-state">No activity recorded yet</div>
+        </section>
+
+        <!-- ══ FINANCIALS ══ -->
+        <section v-if="currentView === 'financials'">
+          <h2 class="text-sm font-semibold text-stone-700 flex items-center gap-2 mb-3">
+            <UIcon name="i-heroicons-banknotes" class="w-4 h-4 text-emerald-600" /> Financial Summary
+          </h2>
+
+          <!-- Net summary -->
+          <div class="bg-white rounded-2xl shadow-sm p-5 mb-3">
+            <div class="grid grid-cols-2 gap-3 mb-4">
+              <div class="bg-emerald-50 rounded-xl p-3">
+                <p class="text-xs text-stone-500 mb-1">Total Revenue</p>
+                <p class="text-lg font-bold text-emerald-700">Ksh {{ formatNum(totalRevenue) }}</p>
+              </div>
+              <div class="bg-red-50 rounded-xl p-3">
+                <p class="text-xs text-stone-500 mb-1">Total Costs</p>
+                <p class="text-lg font-bold text-red-600">Ksh {{ formatNum(totalCosts) }}</p>
+              </div>
+            </div>
+            <div class="border-t border-stone-100 pt-3">
+              <p class="text-xs text-stone-500 mb-1">Net Profit</p>
+              <p class="text-2xl font-bold" :class="netProfit >= 0 ? 'text-emerald-700' : 'text-red-600'">
+                Ksh {{ formatNum(netProfit) }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Breakdown -->
+          <div class="bg-white rounded-2xl shadow-sm divide-y divide-stone-100">
+            <div class="flex justify-between items-center px-4 py-3">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 bg-red-400 rounded-full"></div>
+                <span class="text-sm text-stone-700">Labor Costs</span>
+              </div>
+              <span class="text-sm font-semibold text-stone-700">Ksh {{ formatNum(laborCosts) }}</span>
+            </div>
+            <div class="flex justify-between items-center px-4 py-3">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 bg-orange-400 rounded-full"></div>
+                <span class="text-sm text-stone-700">Land Prep Costs</span>
+              </div>
+              <span class="text-sm font-semibold text-stone-700">Ksh {{ formatNum(landPrepCosts) }}</span>
+            </div>
+            <div class="flex justify-between items-center px-4 py-3">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <span class="text-sm text-stone-700">Harvest Revenue</span>
+              </div>
+              <span class="text-sm font-semibold text-emerald-600">Ksh {{ formatNum(harvestRevenue) }}</span>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Download Report button (bottom) -->
+      <div class="mx-4 mt-5">
+        <button @click="generateReport" class="w-full flex items-center justify-center gap-2 bg-stone-800 text-white py-3.5 rounded-xl text-sm font-semibold hover:bg-stone-900 active:scale-[0.98] transition-all">
+          <UIcon name="i-heroicons-arrow-down-tray" class="w-4 h-4" />
+          Download Full Report
+        </button>
+      </div>
+    </template>
   </div>
 </template>
 
-<style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
-
-/* Font Definitions */
-.font-inter {
-  font-family: 'Inter', sans-serif;
-}
-
-.font-playfair {
-  font-family: 'Playfair Display', serif;
-}
-
-/* Leaf Pattern Background */
-.bg-leaf-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 5C15 5 10 10 10 15C10 20 15 25 20 25C25 25 30 20 30 15C30 10 25 5 20 5ZM20 7C24 7 28 11 28 15C28 19 24 23 20 23C16 23 12 19 12 15C12 11 16 7 20 7Z' fill='%2399f6e4'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-}
-
-/* Custom Scrollbar */
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: #6ee7b7 #f5f5f4;
-}
-
-.scrollbar-thin::-webkit-scrollbar {
-  height: 6px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: #f5f5f4;
-  border-radius: 3px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #6ee7b7;
-  border-radius: 3px;
-  transition: background 0.3s;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #10b981;
-}
-
-/* Input Placeholder */
-input::placeholder {
-  color: #78716c;
-  font-size: 0.875rem;
-  opacity: 0.7;
-}
-
-/* Input Focus Animation */
-input:focus,
-input:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
-}
-
-/* Card Hover Effect */
-.card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-/* Disabled Button */
-button:disabled {
-  background-color: #d6d3d1;
-  color: #78716c;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-/* Form Animation */
-.animation-fade-slide {
-  animation: fadeSlide 0.4s ease-out;
-}
-
-@keyframes fadeSlide {
-  from {
-    opacity: 0;
-    transform: translateY(-15px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Image Loading Animation */
-img[loading="lazy"] {
-  opacity: 0;
-  transition: opacity 0.4s ease-in-out;
-}
-
-img[loading="lazy"][src] {
-  opacity: 1;
-}
-
-/* Responsive Typography */
-h1 {
-  font-size: clamp(1.5rem, 5vw, 1.875rem);
-}
-
-h2 {
-  font-size: clamp(1.25rem, 4vw, 1.5rem);
-}
-
-.text-base {
-  font-size: clamp(0.875rem, 3.5vw, 1rem);
-}
-
-.text-sm {
-  font-size: clamp(0.75rem, 3vw, 0.875rem);
-}
-
-/* Aspect Ratio */
-.aspect-video {
-  aspect-ratio: 16 / 9;
-}
-
-/* Line Clamping */
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Touch Targets */
-button,
-a,
-[role="button"] {
-  min-height: 48px;
-  min-width: 48px;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Prevent Zoom on Input Focus */
-input,
-select,
-textarea {
-  font-size: 16px;
-}
-
-/* Active State Effects */
-.active\:scale-95:active {
-  transform: scale(0.95);
-}
-
-.active\:scale-98:active {
-  transform: scale(0.98);
-}
-
-.active\:bg-emerald-700:active {
-  background-color: #047857;
-}
-
-.active\:bg-stone-50:active {
-  background-color: #f5f5f4;
-}
-
-/* Shadow Sizes */
-.shadow-sm {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-}
-
-.shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-}
-
-/* Focus Rings */
-.focus\:ring-2:focus {
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.5);
-}
-
-.focus\:border-emerald-500:focus {
-  border-color: #10b981;
-}
-</style>
 <script setup>
-import { ref, computed } from "vue";
-import { useRoute } from "vue-router";
-import { useProjectStore } from "~/stores/project";
-import * as XLSX from "xlsx";
+import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { useProjectStore } from '~/stores/project';
+import * as XLSX from 'xlsx';
 
-// State Management
+definePageMeta({ middleware: 'auth' });
+
 const route = useRoute();
 const projectStore = useProjectStore();
-const project = ref(null);
-const currentView = ref("labour");
-const imageFile = ref(null);
-const imagePreview = ref(null);
-const loading = ref(false);
 
-// Form Visibility
-const showLaborForm = ref(false);
-const showLandPrepForm = ref(false);
-const showHarvestForm = ref(false);
-const showSprayingForm = ref(false);
-const showFertilizerForm = ref(false);
-const showProgressForm = ref(false);
+// ── Reactive project from store ──────────────────────────────────────────────
+const project = computed(() => projectStore.projects.find((p) => p.id === route.params.id) || null);
 
-// Saving States
-const savingLabor = ref(false);
-const savingLandPrep = ref(false);
-const savingHarvest = ref(false);
-const savingSpraying = ref(false);
-const savingFertilizer = ref(false);
-const savingProgress = ref(false);
-
-// Form Data
-const newLabor = ref({
-  date: "",
-  numberOfWorkers: "",
-  taskPerformed: "",
-  hoursWorked: "",
-  wageRate: "",
-  cropArea: "",
-});
-const newLandPrep = ref({
-  date: "",
-  landPrepLabor: "",
-  prepDescription: "",
-  prepPrice: "",
-});
-const newHarvest = ref({
-  date: "",
-  quantity: "",
-  quality: "",
-  pricePerUnit: "",
-});
-const newSpraying = ref({
-  serialNo: "",
-  tradeName: "",
-  regNo: "",
-  activeIngredients: "",
-  manufacturer: "",
-  agent: "",
-  uses: "",
-  date: "",
-});
-const newFertilizer = ref({
-  date: "",
-  type: "",
-  stage: "",
-  purpose: "",
-  name: "",
-});
-const newProgress = ref({
-  date: "",
-  stage: "",
+onMounted(async () => {
+  if (projectStore.projects.length === 0) {
+    try { await projectStore.fetchProjects(); } catch (e) { console.error(e); }
+  }
+  if (!project.value) {
+    try { await projectStore.getProjectById(route.params.id); } catch (e) { console.error(e); }
+  }
 });
 
-// Navigation Views
+// ── Views ────────────────────────────────────────────────────────────────────
+const currentView = ref('labour');
 const views = [
-  
-  { id: "landPrep", label: "Land Prep", icon: "i-lucide-tractor" },
-  { id: "labour", label: "Labour", icon: "i-lucide-users" },
-  { id: "spray", label: "Spray", icon: "i-lucide-droplet" },
-  { id: "fertilizer", label: "Fertilizer", icon: "i-lucide-package" },
-  { id: "progress", label: "Progress", icon: "i-lucide-bar-chart" },
-  { id: "harvest", label: "Harvest", icon: "i-lucide-leaf" },
-  { id: "TotalCost", label: "Total Costs", icon: "i-lucide-wallet" },
- 
+  { id: 'labour',     label: 'Labour',     icon: 'i-heroicons-users' },
+  { id: 'landPrep',   label: 'Land Prep',  icon: 'i-heroicons-wrench-screwdriver' },
+  { id: 'harvest',    label: 'Harvest',    icon: 'i-heroicons-archive-box' },
+  { id: 'spray',      label: 'Spray',      icon: 'i-heroicons-beaker' },
+  { id: 'fertilizer', label: 'Fertilizer', icon: 'i-heroicons-cube' },
+  { id: 'progress',   label: 'Progress',   icon: 'i-heroicons-photo' },
+  { id: 'financials', label: 'Finance',    icon: 'i-heroicons-banknotes' },
+  { id: 'audit',      label: 'Audit',      icon: 'i-heroicons-clipboard-document-list' },
 ];
 
-// Methods
-const setView = (view) => {
-  currentView.value = view;
+// ── Form visibility ──────────────────────────────────────────────────────────
+const showLaborForm     = ref(false);
+const showLandPrepForm  = ref(false);
+const showHarvestForm   = ref(false);
+const showSprayingForm  = ref(false);
+const showFertilizerForm = ref(false);
+const showProgressForm  = ref(false);
+
+const toggleForm = (type) => {
+  const map = { labor: showLaborForm, landPrep: showLandPrepForm, harvest: showHarvestForm, spray: showSprayingForm, fertilizer: showFertilizerForm, progress: showProgressForm };
+  map[type].value = !map[type].value;
 };
 
-const toggleForm = (formType) => {
-  const forms = {
-    labor: showLaborForm,
-    landPrep: showLandPrepForm,
-    harvest: showHarvestForm,
-    spray: showSprayingForm,
-    fertilizer: showFertilizerForm,
-    progress: showProgressForm,
-  };
-  forms[formType].value = !forms[formType].value;
+// ── Saving states ────────────────────────────────────────────────────────────
+const savingLabor      = ref(false);
+const savingLandPrep   = ref(false);
+const savingHarvest    = ref(false);
+const savingSpraying   = ref(false);
+const savingFertilizer = ref(false);
+const savingProgress   = ref(false);
+
+// ── Form models ──────────────────────────────────────────────────────────────
+const newLabor = ref({ date: '', numberOfWorkers: '', taskPerformed: '', hoursWorked: '', wageRate: '', cropArea: '' });
+const newLandPrep = ref({ date: '', landPrepLabor: '', prepDescription: '', prepPrice: '' });
+const newHarvest = ref({ date: '', quantity: '', quality: '', pricePerUnit: '' });
+const newSpraying = ref({ date: '', serialNo: '', tradeName: '', regNo: '', activeIngredients: '', manufacturer: '', agent: '', uses: '' });
+const newFertilizer = ref({ date: '', type: '', stage: '', name: '', purpose: '' });
+const newProgress = ref({ date: '', stage: '' });
+const imageFile = ref(null);
+const imagePreview = ref(null);
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const formatDate = (d) => {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-KE', { year: 'numeric', month: 'short', day: 'numeric' });
+};
+const formatNum = (n) => {
+  const num = Number(n);
+  if (isNaN(num)) return '0';
+  return num.toLocaleString('en-KE');
 };
 
-const handleImageUpload = (event) => {
-  if (!event?.target?.files?.length) return;
-  const file = event.target.files[0];
-  if (!file.type.startsWith("image/")) return;
-  if (file.size > 2 * 1024 * 1024) return; // 2MB limit
+// ── Financial computeds ──────────────────────────────────────────────────────
+// ── Progress percentage ──────────────────────────────────────────────────────
+const progressPercent = computed(() => {
+  if (!project.value?.startDate || !project.value?.duration) return 0;
+  const start = new Date(project.value.startDate).getTime();
+  const end = start + project.value.duration * 30 * 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  const pct = Math.round(((now - start) / (end - start)) * 100);
+  return Math.min(100, Math.max(0, pct));
+});
+
+// ── Audit feed ───────────────────────────────────────────────────────────────
+const auditFeed = computed(() => {
+  if (!project.value) return [];
+  const entries = [
+    ...(project.value.laborTable || []).map(r => ({
+      type: 'Labour', icon: 'i-heroicons-users', color: 'bg-blue-100 text-blue-600',
+      title: r.taskPerformed || 'Labor record',
+      detail: `${r.numberOfWorkers} workers · ${r.hoursWorked} hrs · Ksh ${formatNum(r.numberOfWorkers * r.wageRate)}`,
+      date: r.date, createdAt: r.createdAt,
+    })),
+    ...(project.value.landPrepTable || []).map(r => ({
+      type: 'Land Prep', icon: 'i-heroicons-wrench-screwdriver', color: 'bg-orange-100 text-orange-600',
+      title: r.landPrepLabor || 'Land prep record',
+      detail: `${r.prepDescription} · Ksh ${formatNum(r.prepPrice)}`,
+      date: r.date, createdAt: r.createdAt,
+    })),
+    ...(project.value.harvestTable || []).map(r => ({
+      type: 'Harvest', icon: 'i-heroicons-archive-box', color: 'bg-emerald-100 text-emerald-600',
+      title: `${r.quantity} units harvested`,
+      detail: `${r.quality} grade · Ksh ${formatNum(r.pricePerUnit)}/unit · Total Ksh ${formatNum(r.quantity * r.pricePerUnit)}`,
+      date: r.date, createdAt: r.createdAt,
+    })),
+    ...(project.value.sprayingTable || []).map(r => ({
+      type: 'Spraying', icon: 'i-heroicons-beaker', color: 'bg-purple-100 text-purple-600',
+      title: r.tradeName || 'Spraying record',
+      detail: `${r.activeIngredients} · ${r.manufacturer}`,
+      date: r.date, createdAt: r.createdAt,
+    })),
+    ...(project.value.fertilizerTable || []).map(r => ({
+      type: 'Fertilizer', icon: 'i-heroicons-cube', color: 'bg-amber-100 text-amber-600',
+      title: `${r.type} — ${r.name || 'Fertilizer'}`,
+      detail: `Stage: ${r.stage} · ${r.purpose}`,
+      date: r.date, createdAt: r.createdAt,
+    })),
+    ...(project.value.progressTable || []).map(r => ({
+      type: 'Progress', icon: 'i-heroicons-photo', color: 'bg-stone-100 text-stone-600',
+      title: r.stage || 'Progress milestone',
+      detail: r.imageUrl ? 'Photo attached' : 'No photo',
+      date: r.date, createdAt: r.createdAt,
+    })),
+  ];
+  return entries.sort((a, b) => new Date(b.date) - new Date(a.date));
+});
+
+const auditFeedByDate = computed(() => {
+  const groups = {};
+  for (const entry of auditFeed.value) {
+    const key = entry.date || 'Unknown date';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(entry);
+  }
+  return Object.entries(groups).sort(([a], [b]) => new Date(b) - new Date(a));
+});
+
+const laborCosts = computed(() =>
+  (project.value?.laborTable || []).reduce((sum, r) => sum + (r.numberOfWorkers * r.wageRate || 0), 0)
+);
+const landPrepCosts = computed(() =>
+  (project.value?.landPrepTable || []).reduce((sum, r) => sum + (Number(r.prepPrice) || 0), 0)
+);
+const harvestRevenue = computed(() =>
+  (project.value?.harvestTable || []).reduce((sum, r) => sum + (r.quantity * r.pricePerUnit || 0), 0)
+);
+const totalRevenue = computed(() => harvestRevenue.value);
+const totalCosts   = computed(() => laborCosts.value + landPrepCosts.value);
+const netProfit    = computed(() => totalRevenue.value - totalCosts.value);
+
+// ── Image upload ─────────────────────────────────────────────────────────────
+const handleImageUpload = (e) => {
+  const file = e?.target?.files?.[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  if (file.size > 2 * 1024 * 1024) { alert('Image must be under 2MB'); return; }
   imageFile.value = file;
   const reader = new FileReader();
-  reader.onload = (e) => (imagePreview.value = e.target.result);
+  reader.onload = (ev) => (imagePreview.value = ev.target.result);
   reader.readAsDataURL(file);
 };
 
-const resetForm = () => {
-  newProgress.value = { date: "", stage: "" };
-  imageFile.value = null;
-  imagePreview.value = null;
-};
-
+// ── Save actions ─────────────────────────────────────────────────────────────
 const saveLaborRecord = async () => {
   try {
     savingLabor.value = true;
     await projectStore.addLaborRecord(project.value.id, newLabor.value);
-    newLabor.value = {
-      date: "",
-      numberOfWorkers: "",
-      taskPerformed: "",
-      hoursWorked: "",
-      wageRate: "",
-      cropArea: "",
-    };
+    newLabor.value = { date: '', numberOfWorkers: '', taskPerformed: '', hoursWorked: '', wageRate: '', cropArea: '' };
     showLaborForm.value = false;
-  } catch (error) {
-    console.error("Error saving labor record:", error);
-  } finally {
-    savingLabor.value = false;
-  }
+  } catch (e) { console.error(e); } finally { savingLabor.value = false; }
 };
 
 const saveLandPrepRecord = async () => {
   try {
     savingLandPrep.value = true;
     await projectStore.addLandPrepRecord(project.value.id, newLandPrep.value);
-    newLandPrep.value = {
-      date: "",
-      landPrepLabor: "",
-      prepDescription: "",
-      prepPrice: "",
-    };
+    newLandPrep.value = { date: '', landPrepLabor: '', prepDescription: '', prepPrice: '' };
     showLandPrepForm.value = false;
-  } catch (error) {
-    console.error("Error saving land prep record:", error);
-  } finally {
-    savingLandPrep.value = false;
-  }
+  } catch (e) { console.error(e); } finally { savingLandPrep.value = false; }
 };
 
 const saveHarvestRecord = async () => {
   try {
     savingHarvest.value = true;
     await projectStore.addHarvestRecord(project.value.id, newHarvest.value);
-    newHarvest.value = {
-      date: "",
-      quantity: "",
-      quality: "",
-      pricePerUnit: "",
-    };
+    newHarvest.value = { date: '', quantity: '', quality: '', pricePerUnit: '' };
     showHarvestForm.value = false;
-  } catch (error) {
-    console.error("Error saving harvest record:", error);
-  } finally {
-    savingHarvest.value = false;
-  }
+  } catch (e) { console.error(e); } finally { savingHarvest.value = false; }
 };
 
 const saveSprayingRecord = async () => {
   try {
     savingSpraying.value = true;
     await projectStore.addSprayingRecord(project.value.id, newSpraying.value);
-    newSpraying.value = {
-      serialNo: "",
-      tradeName: "",
-      regNo: "",
-      activeIngredients: "",
-      manufacturer: "",
-      agent: "",
-      uses: "",
-      date: "",
-    };
+    newSpraying.value = { date: '', serialNo: '', tradeName: '', regNo: '', activeIngredients: '', manufacturer: '', agent: '', uses: '' };
     showSprayingForm.value = false;
-  } catch (error) {
-    console.error("Error saving spraying record:", error);
-  } finally {
-    savingSpraying.value = false;
-  }
+  } catch (e) { console.error(e); } finally { savingSpraying.value = false; }
 };
 
 const saveFertilizerRecord = async () => {
   try {
     savingFertilizer.value = true;
     await projectStore.addFertilizerRecord(project.value.id, newFertilizer.value);
-    newFertilizer.value = {
-      date: "",
-      type: "",
-      stage: "",
-      name: "",
-      purpose: "",
-    };
+    newFertilizer.value = { date: '', type: '', stage: '', name: '', purpose: '' };
     showFertilizerForm.value = false;
-  } catch (error) {
-    console.error("Error saving fertilizer record:", error);
-  } finally {
-    savingFertilizer.value = false;
-  }
+  } catch (e) { console.error(e); } finally { savingFertilizer.value = false; }
 };
 
 const saveProgressRecord = async () => {
   if (!project.value?.id) return;
   try {
     savingProgress.value = true;
-    await projectStore.addProgressPrepRecord(
-      project.value.id,
-      newProgress.value,
-      imageFile.value
-    );
-    resetForm();
+    await projectStore.addProgressPrepRecord(project.value.id, newProgress.value, imageFile.value);
+    newProgress.value = { date: '', stage: '' };
+    imageFile.value = null;
+    imagePreview.value = null;
     showProgressForm.value = false;
-  } catch (error) {
-    console.error("Error saving progress record:", error);
-  } finally {
-    savingProgress.value = false;
-  }
+  } catch (e) { console.error(e); } finally { savingProgress.value = false; }
 };
 
+// ── Report ───────────────────────────────────────────────────────────────────
 const generateReport = () => {
+  if (!project.value) return;
   try {
     const wb = XLSX.utils.book_new();
+    const p = project.value;
+    const lc = laborCosts.value;
+    const lpc = landPrepCosts.value;
+    const hr = harvestRevenue.value;
+    const total = lc + lpc;
+    const net = hr - total;
 
-    // Labor Sheet
-    const laborSheetData = [
-      [
-        "Date",
-        "Number of Workers",
-        "Task Performed",
-        "Hours Worked",
-        "Wage Rate",
-        "Total Wages",
-        "Crop Area",
-      ],
-      ...project.value.laborTable.map((record) => [
-        record.date,
-        record.numberOfWorkers,
-        record.taskPerformed,
-        record.hoursWorked,
-        record.wageRate,
-        record.numberOfWorkers * record.wageRate,
-        record.cropArea,
-      ]),
+    // ── Sheet 1: Summary ──
+    const summaryData = [
+      ['PROJECT REPORT', ''],
+      ['', ''],
+      ['Project Name', p.projectName],
+      ['Description', p.description],
+      ['Start Date', p.startDate],
+      ['Duration', `${p.duration} months`],
+      ['Land Size', `${p.landSize} acres`],
+      ['Progress', `${progressPercent.value}%`],
+      ['Report Generated', new Date().toLocaleDateString('en-KE')],
+      ['', ''],
+      ['FINANCIAL SUMMARY', ''],
+      ['Total Revenue (Harvest)', `Ksh ${hr.toLocaleString('en-KE')}`],
+      ['Total Costs (Labor + Land Prep)', `Ksh ${total.toLocaleString('en-KE')}`],
+      ['  - Labor Costs', `Ksh ${lc.toLocaleString('en-KE')}`],
+      ['  - Land Prep Costs', `Ksh ${lpc.toLocaleString('en-KE')}`],
+      ['Net Profit / Loss', `Ksh ${net.toLocaleString('en-KE')}`],
+      ['', ''],
+      ['RECORD COUNTS', ''],
+      ['Labor Records', p.laborTable.length],
+      ['Land Prep Records', p.landPrepTable.length],
+      ['Harvest Records', p.harvestTable.length],
+      ['Spraying Records', p.sprayingTable.length],
+      ['Fertilizer Records', p.fertilizerTable.length],
+      ['Progress Milestones', p.progressTable.length],
     ];
-    const laborSheet = XLSX.utils.aoa_to_sheet(laborSheetData);
-    XLSX.utils.book_append_sheet(wb, laborSheet, "Labor Records");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryData), 'Summary');
 
-    // Land Prep Sheet
-    const landPrepSheetData = [
-      ["Date", "Labor", "Description", "Price"],
-      ...project.value.landPrepTable.map((record) => [
-        record.date,
-        record.landPrepLabor,
-        record.prepDescription,
-        record.prepPrice,
-      ]),
-    ];
-    const landPrepSheet = XLSX.utils.aoa_to_sheet(landPrepSheetData);
-    XLSX.utils.book_append_sheet(wb, landPrepSheet, "Land Prep Records");
+    // ── Sheet 2: Audit log ──
+    const auditRows = auditFeed.value.map(e => [e.date, e.type, e.title, e.detail]);
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+      ['Date', 'Category', 'Activity', 'Details'],
+      ...auditRows,
+    ]), 'Audit Log');
 
-    // Harvest Sheet
-    const harvestSheetData = [
-      ["Date", "Quantity", "Quality", "Price/Unit", "Total"],
-      ...project.value.harvestTable.map((record) => [
-        record.date,
-        record.quantity,
-        record.quality,
-        record.pricePerUnit,
-        record.quantity * record.pricePerUnit,
-      ]),
-    ];
-    const harvestSheet = XLSX.utils.aoa_to_sheet(harvestSheetData);
-    XLSX.utils.book_append_sheet(wb, harvestSheet, "Harvest Records");
+    // ── Sheet 3: Labor ──
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+      ['Date', 'Workers', 'Task Performed', 'Hours', 'Wage Rate (Ksh)', 'Total Wages (Ksh)', 'Area (ac)'],
+      ...p.laborTable.map((r) => [r.date, r.numberOfWorkers, r.taskPerformed, r.hoursWorked, r.wageRate, r.numberOfWorkers * r.wageRate, r.cropArea]),
+    ]), 'Labor');
 
-    // Spraying Sheet
-    const sprayingSheetData = [
-      [
-        "Serial No",
-        "Trade Name",
-        "Reg No",
-        "Active Ingredients",
-        "Manufacturer",
-        "Agent",
-        "Uses",
-        "Date",
-      ],
-      ...project.value.sprayingTable.map((record) => [
-        record.serialNo,
-        record.tradeName,
-        record.regNo,
-        record.activeIngredients,
-        record.manufacturer,
-        record.agent,
-        record.uses,
-        record.date,
-      ]),
-    ];
-    const sprayingSheet = XLSX.utils.aoa_to_sheet(sprayingSheetData);
-    XLSX.utils.book_append_sheet(wb, sprayingSheet, "Spraying Records");
+    // ── Sheet 4: Land Prep ──
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+      ['Date', 'Labor Type', 'Description', 'Cost (Ksh)'],
+      ...p.landPrepTable.map((r) => [r.date, r.landPrepLabor, r.prepDescription, r.prepPrice]),
+    ]), 'Land Prep');
 
-    // Fertilizer Sheet
-    const fertilizerSheetData = [
-      ["Date", "Stage", "Type", "Name", "Purpose"],
-      ...project.value.fertilizerTable.map((record) => [
-        record.date,
-        record.stage,
-        record.type,
-        record.name,
-        record.purpose,
-      ]),
-    ];
-    const fertilizerSheet = XLSX.utils.aoa_to_sheet(fertilizerSheetData);
-    XLSX.utils.book_append_sheet(wb, fertilizerSheet, "Fertilizer Records");
+    // ── Sheet 5: Harvest ──
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+      ['Date', 'Quantity', 'Quality', 'Price/Unit (Ksh)', 'Total Revenue (Ksh)'],
+      ...p.harvestTable.map((r) => [r.date, r.quantity, r.quality, r.pricePerUnit, r.quantity * r.pricePerUnit]),
+    ]), 'Harvest');
 
-    // Progress Sheet
-    const progressSheetData = [
-      ["Date", "Stage", "Status"],
-      ...project.value.progressTable.map((record) => [
-        record.date,
-        record.stage,
-        record.status,
-      ]),
-    ];
-    const progressSheet = XLSX.utils.aoa_to_sheet(progressSheetData);
-    XLSX.utils.book_append_sheet(wb, progressSheet, "Progress Records");
+    // ── Sheet 6: Spraying ──
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+      ['Date', 'Serial No', 'Trade Name', 'Reg No', 'Active Ingredients', 'Manufacturer', 'Agent', 'Uses'],
+      ...p.sprayingTable.map((r) => [r.date, r.serialNo, r.tradeName, r.regNo, r.activeIngredients, r.manufacturer, r.agent, r.uses]),
+    ]), 'Spraying');
 
-    // Generate and Download
-    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([wbout], { type: "application/octet-stream" });
-    const link = document.createElement("a");
+    // ── Sheet 7: Fertilizer ──
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+      ['Date', 'Stage', 'Type', 'Name', 'Purpose'],
+      ...p.fertilizerTable.map((r) => [r.date, r.stage, r.type, r.name, r.purpose]),
+    ]), 'Fertilizer');
+
+    // ── Sheet 8: Progress ──
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+      ['Date', 'Milestone / Stage', 'Photo URL'],
+      ...p.progressTable.map((r) => [r.date, r.stage, r.imageUrl || '']),
+    ]), 'Progress');
+
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([wbout], { type: 'application/octet-stream' });
+    const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `${project.value.projectName}-report.xlsx`;
+    link.download = `${p.projectName}-report.xlsx`;
     link.click();
-  } catch (error) {
-    console.error("Error generating report:", error);
-  }
+  } catch (e) { console.error('Report error:', e); }
 };
-
-// Initialize
-project.value = computed(() =>
-  projectStore.projects.find((p) => p.id === route.params.id)
-).value;
 </script>
+
+<style scoped>
+.field-label {
+  @apply block text-xs font-medium text-stone-600 mb-1.5;
+}
+.field-input {
+  @apply w-full px-3 py-2.5 border border-stone-200 rounded-xl bg-white text-stone-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder:text-stone-300;
+  font-size: 16px; /* prevents iOS zoom */
+}
+.submit-btn {
+  @apply w-full bg-emerald-600 text-white py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-emerald-700 active:bg-emerald-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+}
+.record-card {
+  @apply bg-white rounded-xl p-4 border border-stone-100 shadow-sm;
+}
+.empty-state {
+  @apply text-center text-sm text-stone-400 py-10 bg-white rounded-2xl border border-dashed border-stone-200;
+}
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+@keyframes form-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-form-in { animation: form-in 0.2s ease-out; }
+</style>

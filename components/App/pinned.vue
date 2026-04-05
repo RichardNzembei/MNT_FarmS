@@ -1,48 +1,23 @@
+<script setup>
+import { onMounted } from 'vue';
+import { useProjectStore } from '@/stores/project';
+
+const projectStore = useProjectStore();
+onMounted(() => { projectStore.fetchProjects(); });
+</script>
+
 <template>
-    <section class="pinned-section">
-      <div class="section-header">
-        <h2 class="section-title">
-          <UIcon name="i-mdi-pin" class="pin-icon" />
-          Pinned Projects
-        </h2>
-        <UButton 
-          label="View All" 
-          variant="ghost" 
-          size="xs" 
-          color="gray" 
-          icon="i-heroicons-chevron-right"
-          class="view-all"
-        />
+  <div class="bg-white rounded-2xl shadow-sm p-4">
+    <div class="flex justify-between items-center mb-3">
+      <div class="flex items-center gap-2">
+        <UIcon name="i-heroicons-bookmark-solid" class="w-4 h-4 text-emerald-600" />
+        <h2 class="text-sm font-semibold text-stone-800">Pinned Projects</h2>
       </div>
-      
-      <div class="projects-container">
-        <ProjectExisting />
-      </div>
-    </section>
-  </template>
-  
-  <style scoped>
-  .pinned-section {
-    @apply bg-white rounded-xl shadow-sm p-4;
-  }
-  
-  .section-header {
-    @apply flex justify-between items-center mb-4;
-  }
-  
-  .section-title {
-    @apply text-lg font-semibold text-gray-800 flex items-center;
-  }
-  
-  .pin-icon {
-    @apply text-green-500 mr-2;
-  }
-  
-  .view-all {
-    @apply text-gray-500 hover:text-green-600;
-  }
-  
-  .projects-container {
-    @apply space-y-3;
-  }
-  </style>
+      <NuxtLink to="/existingproject" class="text-xs text-emerald-600 font-medium flex items-center gap-1 hover:text-emerald-700">
+        View All
+        <UIcon name="i-heroicons-chevron-right" class="w-3.5 h-3.5" />
+      </NuxtLink>
+    </div>
+    <ProjectExisting />
+  </div>
+</template>

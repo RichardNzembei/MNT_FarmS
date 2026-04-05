@@ -1,53 +1,48 @@
 import getFirebaseAdmin from "../firebase";
+import { getAuthUser } from "../utils/auth";
 
 export default defineEventHandler(async (event) => {
   setResponseHeaders(event, {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
   });
 
   if (event.node.req.method === "OPTIONS") {
     return { message: "CORS preflight passed" };
   }
 
+  const authUser = await getAuthUser(event);
+
   try {
     const { firestore } = getFirebaseAdmin();
     if (!firestore) {
-      throw createError({
-        statusCode: 500,
-        statusMessage: "Failed to initialize Firestore",
-      });
+      throw createError({ statusCode: 500, statusMessage: "Failed to initialize Firestore" });
     }
 
     if (event.node.req.method === "GET") {
       const snapshot = await firestore
         .collection("projects")
-        .orderBy("createdAt", "desc")
+        .where("farmId", "==", authUser.uid)
         .get();
-      const projects = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const projects = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      // Sort by createdAt descending in memory (avoids requiring composite index)
+      projects.sort((a, b) => {
+        const aTime = a.createdAt?.toMillis?.() || new Date(a.createdAt).getTime() || 0;
+        const bTime = b.createdAt?.toMillis?.() || new Date(b.createdAt).getTime() || 0;
+        return bTime - aTime;
+      });
       return projects;
     }
 
     if (event.node.req.method === "POST") {
       const body = await readBody(event);
-      if (
-        !body.projectName ||
-        !body.description ||
-        !body.duration ||
-        !body.startDate ||
-        !body.landSize
-      ) {
-        throw createError({
-          statusCode: 400,
-          statusMessage: "Fill all project details",
-        });
+      if (!body.projectName || !body.description || !body.duration || !body.startDate || !body.landSize) {
+        throw createError({ statusCode: 400, statusMessage: "Fill all project details" });
       }
 
       const docRef = await firestore.collection("projects").add({
+        farmId: authUser.uid,
         projectName: body.projectName,
         description: body.description,
         duration: body.duration,
@@ -58,6 +53,7 @@ export default defineEventHandler(async (event) => {
         laborTable: [],
         harvestTable: [],
         landPrepTable: [],
+        progressTable: [],
         status: "",
         createdAt: new Date(),
       });
@@ -65,10 +61,7 @@ export default defineEventHandler(async (event) => {
       return { message: "Project added successfully", id: docRef.id };
     }
 
-    throw createError({
-      statusCode: 405,
-      statusMessage: "Method Not Allowed",
-    });
+    throw createError({ statusCode: 405, statusMessage: "Method Not Allowed" });
   } catch (error) {
     console.error("Error handling project request:", error);
     throw createError({
