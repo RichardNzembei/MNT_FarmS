@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 
 const baseURL =
   process.env.NODE_ENV === 'production'
-    ? 'https://reubens-farm-s.vercel.app'
+    ? 'https://mtn-farm-s.vercel.app/'
     : typeof window !== 'undefined' && window.location.hostname === '10.1.45.30'
     ? 'http://10.1.45.30:3000'
     : 'http://localhost:3000';
