@@ -8,10 +8,10 @@ export default defineNuxtConfig({
       VitePWA({
         registerType: "autoUpdate",
         manifest: {
-          name: "Reuben's Farms",
-          short_name: "Reuben's Farms",
+          name: "MTN-FarmS",
+          short_name: "MTN-FarmS",
           description:
-            "Manage your agricultural projects with ease, track labor, harvests, and progress on Reuben's Farms.",
+            "Manage your agricultural projects with ease, track labor, harvests, and progress on MTN-FarmS.",
           lang: "en-US",
           start_url: "/?utm_source=pwa",
           scope: "/",
@@ -51,7 +51,7 @@ export default defineNuxtConfig({
         },
         workbox: {
           globPatterns: ["**/*.{js,css,html,png,svg,ico,json}"],
-          navigateFallback: "https://reubens-farm-s.vercel.app/",
+          navigateFallback: "https://mtn-farm-s.vercel.app/",
           navigateFallbackDenylist: [/^\/nuxt\//, /\/api\//],
         },
         includeAssets: [
@@ -66,6 +66,8 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
+      title: "MTN-FarmS",
+      meta: [{ name: "application-name", content: "MTN-FarmS" }],
       link: [{ rel: "manifest", href: "/manifest.json" }],
     },
   },

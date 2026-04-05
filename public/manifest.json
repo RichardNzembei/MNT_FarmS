@@ -1,7 +1,7 @@
 {
-  "name": "Reuben's Farms",
-  "short_name": "Reuben's Farms",
-  "description": "Manage your agricultural projects with ease, track labor, harvests, and progress on Reuben's Farms.",
+  "name": "MTN-FarmS",
+  "short_name": "MTN-FarmS",
+  "description": "Manage your agricultural projects with ease, track labor, harvests, and progress on MTN-FarmS.",
   "lang": "en-US",
   "start_url": "/?utm_source=pwa",
   "scope": "/",
